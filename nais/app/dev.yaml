@@ -6,6 +6,7 @@ cpu: 400m
 memory: 768Mi
 external-host:
   - pdl-api.dev-fss-pub.nais.io
+  - grunndata.brreg.no/grunndata/ErFr
 env:
   SPRING_PROFILES_ACTIVE: default
   PDL_BASE_URL: https://pdl-api.dev-fss-pub.nais.io
