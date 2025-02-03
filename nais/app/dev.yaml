@@ -11,3 +11,4 @@ env:
   SPRING_PROFILES_ACTIVE: default
   PDL_BASE_URL: https://pdl-api.dev-fss-pub.nais.io
   PDL_API_AAD_CLIENT_ID: dev-fss.pdl.pdl-api
+  BRREG_URL: https://grunndata.brreg.no/grunndata/ErFr
