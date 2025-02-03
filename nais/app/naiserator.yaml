@@ -1,0 +1,58 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: flex-brreg-proxy
+  namespace: flex
+  labels:
+    team: flex
+  annotations:  
+    config.linkerd.io/proxy-outbound-connect-timeout: 10s
+spec:
+  image: {{image}}
+  replicas:
+    min: {{replicas_min}}
+    max: {{replicas_max}}
+    scalingStrategy:
+      cpu:
+        thresholdPercentage: 90
+  port: 8080
+  liveness:
+    path: /internal/health
+  readiness:
+    path: /internal/health
+  startup:
+    path: /internal/health
+    initialDelay: 40
+  prometheus:
+    enabled: true
+    path: /internal/prometheus
+  resources:
+    limits:
+      memory: {{memory}}
+    requests:
+      cpu: {{cpu}}
+      memory: {{memory}}
+  azure:
+    application:
+      enabled: true
+      allowAllUsers: false
+      tenant: {{azureTenant}}
+  accessPolicy:
+    outbound:
+      external:
+    {{#each external-host}}
+        - host: {{this}}
+    {{/each}}
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+    logging:
+      destinations:
+        - id: loki
+        - id: elastic
+  env:
+  {{#each env}}
+     - name: {{@key}}
+       value: "{{this}}"
+  {{/each}}
