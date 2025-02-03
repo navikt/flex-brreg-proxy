@@ -3,10 +3,12 @@ package no.nav.helse.flex
 import generated.rolleutskrift.Grunndata
 import no.nav.helse.flex.config.logger
 import no.nav.helse.flex.config.serialisertTilString
+import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
+@Profile("disabled")
 @Component
 class BrregScheduledCaller(
     private val rolleutskriftClient: RolleutskriftClient,
