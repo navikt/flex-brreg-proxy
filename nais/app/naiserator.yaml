@@ -51,6 +51,8 @@ spec:
       destinations:
         - id: loki
         - id: elastic
+  envFrom:
+    - secret: brreg-auth
   env:
   {{#each env}}
      - name: {{@key}}
