@@ -15,6 +15,7 @@ class BrregScheduledCaller(
 
     @Scheduled(initialDelay = 1, fixedDelay = 30, timeUnit = TimeUnit.SECONDS)
     fun callBrreg() {
+        log.info("Kaller på brreg")
         val res = rolleutskriftClient.hentRolleutskriftRaw("04817797240")
         log.info(res?.responseHeader?.toHeaderString())
         try {
