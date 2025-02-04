@@ -18,8 +18,9 @@ class MockWebServereConfig {
         }
 
         val brregSoapServer =
-            MockWebServer().also {
-                System.setProperty("BRREG_URL", "https://localhost:${it.port}/brreg/grunndata/v1")
-            }
+            MockWebServer()
+                .also {
+                    System.setProperty("BRREG_URL", "http://localhost:${it.port}/brreg/grunndata/v1")
+                }
     }
 }
