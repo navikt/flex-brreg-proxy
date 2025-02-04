@@ -10,6 +10,13 @@ management:
     base-path: /internal
     exposure.include: health,prometheus
 
+no.nav.security.jwt:
+  issuer:
+    azureator:
+      discoveryurl: http://localhost:${mock-oauth2-server.port}/azureator/.well-known/openid-configuration
+      accepted_audience: flex-brreg-proxy-client-id
+
+
 BRREG_USERNAME: username
 BRREG_PASSWORD: password
 BRREG_URL: url

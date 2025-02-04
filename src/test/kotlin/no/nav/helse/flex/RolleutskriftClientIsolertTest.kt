@@ -9,7 +9,7 @@ import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 
-class RolleutskriftClientTest : FellesTestOppsett() {
+class RolleutskriftClientIsolertTest : FellesTestOppsett() {
     @MockitoBean
     lateinit var brregSoapClient: BrregSoapClient
 
