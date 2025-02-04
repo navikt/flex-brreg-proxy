@@ -1,4 +1,4 @@
-package no.nav.helse.flex
+package no.nav.helse.flex.clients
 
 import generated.rolleutskrift.Grunndata
 import no.nav.helse.flex.config.logger

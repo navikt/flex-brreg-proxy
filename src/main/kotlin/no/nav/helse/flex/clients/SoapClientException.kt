@@ -1,4 +1,4 @@
-package no.nav.helse.flex
+package no.nav.helse.flex.clients
 
 open class SoapClientException(
     message: String,

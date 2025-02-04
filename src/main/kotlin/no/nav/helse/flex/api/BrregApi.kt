@@ -1,8 +1,8 @@
 package no.nav.helse.flex.api
 
-import no.nav.helse.flex.RolleutskriftClient
-import no.nav.helse.flex.SoapDeserializationException
-import no.nav.helse.flex.SoapServiceException
+import no.nav.helse.flex.clients.RolleutskriftClient
+import no.nav.helse.flex.clients.SoapDeserializationException
+import no.nav.helse.flex.clients.SoapServiceException
 import no.nav.helse.flex.config.logger
 import no.nav.helse.flex.config.serialisertTilString
 import no.nav.security.token.support.core.api.ProtectedWithClaims

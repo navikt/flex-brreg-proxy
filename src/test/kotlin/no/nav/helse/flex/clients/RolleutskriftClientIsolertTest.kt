@@ -1,5 +1,6 @@
-package no.nav.helse.flex
+package no.nav.helse.flex.clients
 
+import no.nav.helse.flex.FellesTestOppsett
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.reset

@@ -1,4 +1,4 @@
-package no.nav.helse.flex
+package no.nav.helse.flex.clients
 
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable

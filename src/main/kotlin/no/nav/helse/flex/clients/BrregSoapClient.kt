@@ -1,5 +1,6 @@
-package no.nav.helse.flex
+package no.nav.helse.flex.clients
 
+import generated.rolleutskrift.Grunndata
 import jakarta.xml.soap.SOAPException
 import no.brreg.saksys.grunndata.ws.ErFr
 import no.nav.helse.flex.config.logger
@@ -13,7 +14,6 @@ import javax.xml.namespace.QName
 import javax.xml.ws.handler.MessageContext
 import javax.xml.ws.handler.soap.SOAPHandler
 import javax.xml.ws.handler.soap.SOAPMessageContext
-import kotlin.collections.set
 import kotlin.jvm.java
 
 @Component
@@ -34,7 +34,7 @@ class BrregSoapClient(
 
     private val hentRolleutskriftClient: ErFr = createSoapClientBean(HENT_ROLLEUTSKRIFT_SERVICE_URL)
 
-    fun hentRolleutskrift(fnr: String): generated.rolleutskrift.Grunndata {
+    fun hentRolleutskrift(fnr: String): Grunndata {
         val startMs = System.currentTimeMillis()
         val response =
             try {
@@ -47,7 +47,7 @@ class BrregSoapClient(
             }
         val deserializedResponse =
             try {
-                JAXB.unmarshal(StringReader(response), generated.rolleutskrift.Grunndata::class.java)
+                JAXB.unmarshal(StringReader(response), Grunndata::class.java)
             } catch (ex: Exception) {
                 val melding = "Feil ved deserialisering av respons"
                 logger.error(melding)
