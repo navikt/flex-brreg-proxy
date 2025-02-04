@@ -1,5 +1,6 @@
-package no.nav.helse.flex
+package no.nav.helse.flex.api
 
+import no.nav.helse.flex.FellesTestOppsett
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -9,7 +10,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
-class ApiTest : FellesTestOppsett() {
+class BrregApiTest : FellesTestOppsett() {
     @Autowired
     lateinit var mockMvc: MockMvc
 
@@ -21,7 +22,7 @@ class ApiTest : FellesTestOppsett() {
                 mockMvc
                     .perform(
                         MockMvcRequestBuilders
-                            .get("/api/v1/check-brreg-auth")
+                            .get("/api/v1/sjekk-brreg-tilgang")
                             .contentType(MediaType.APPLICATION_JSON),
                     ).andExpect(MockMvcResultMatchers.status().isOk)
                     .andReturn()

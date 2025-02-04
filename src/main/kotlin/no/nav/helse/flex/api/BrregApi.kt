@@ -1,26 +1,27 @@
-package no.nav.helse.flex
+package no.nav.helse.flex.api
 
+import no.nav.helse.flex.RolleutskriftClient
+import no.nav.helse.flex.SoapDeserializationException
+import no.nav.helse.flex.SoapServiceException
 import no.nav.helse.flex.config.logger
 import no.nav.helse.flex.config.serialisertTilString
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.api.Unprotected
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RestController
 
-@Controller
-class Api(
+@RestController
+class BrregApi(
     private val rolleutskriftClient: RolleutskriftClient,
 ) {
     private val logger = logger()
 
-    @GetMapping("/api/v1/check-brreg-auth")
+    @GetMapping("/api/v1/sjekk-brreg-tilgang")
     @Unprotected
-    fun getSykmeldinger(): ResponseEntity<Boolean> {
-        // val fnr = tokenxValidering.validerFraDittSykefravaer()
-        return ResponseEntity.ok(false)
-    }
+    fun sjekkBrregTilgang(): ResponseEntity<Boolean> = ResponseEntity.ok(false)
 
     @GetMapping("/api/v1/rolleutskrift/{fnr}")
     @ProtectedWithClaims(issuer = "azureator")
