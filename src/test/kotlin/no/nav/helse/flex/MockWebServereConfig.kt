@@ -4,12 +4,11 @@ import no.nav.helse.flex.config.logger
 import okhttp3.mockwebserver.MockWebServer
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
-import kotlin.apply
 
 @TestConfiguration
 class MockWebServereConfig {
     @Bean
-    fun pdlMockWebServer() = pdlMockWebServer
+    fun brregSoapServer() = brregSoapServer
 
     companion object {
         val logger = logger()
@@ -18,9 +17,9 @@ class MockWebServereConfig {
             logger.info("[TEST] Starter mock webservere")
         }
 
-        val pdlMockWebServer =
-            MockWebServer().apply {
-                System.setProperty("PDL_BASE_URL", "http://localhost:$port")
+        val brregSoapServer =
+            MockWebServer().also {
+                System.setProperty("BRREG_URL", "https://localhost:${it.port}/brreg/grunndata/v1")
             }
     }
 }
