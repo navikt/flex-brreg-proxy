@@ -13,7 +13,13 @@ import org.springframework.test.web.servlet.MockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureObservability
 @EnableMockOAuth2Server
-@SpringBootTest(classes = [Application::class, MockWebServereConfig::class])
+@SpringBootTest(
+    classes = [Application::class, MockWebServereConfig::class],
+    properties = [
+        "spring.main.allow-bean-definition-overriding=true",
+        "BRREG_RETRY_BACKOFF_MS=1",
+    ],
+)
 @AutoConfigureMockMvc(print = MockMvcPrint.NONE, printOnlyOnFailure = false)
 abstract class FellesTestOppsett {
     @Autowired

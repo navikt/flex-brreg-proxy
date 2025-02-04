@@ -27,33 +27,42 @@ class BrregSoapClient(
 ) {
     private val logger = logger()
 
-    private val hentRolleutskrift: ErFr = createBean(HENT_ROLLEUTSKRIFT)
-
-    fun hentRolleutskrift(fnr: String): generated.rolleutskrift.Grunndata? {
-        val startMs = System.currentTimeMillis()
-        return try {
-            val response = hentRolleutskrift.hentRolleutskrift(username, password, fnr)
-            val grunndata =
-                JAXB.unmarshal(StringReader(response), generated.rolleutskrift.Grunndata::class.java)
-            grunndata
-        } catch (ex: Exception) {
-            val endMs = System.currentTimeMillis()
-            val melding = "Feil under henting av rolleutskrift (etter ${endMs - startMs} ms)"
-            logger.error("$melding, se secureLog")
-            logger.error(melding, ex)
-            null
-        }
+    companion object {
+        const val HENT_ROLLEUTSKRIFT_SERVICE_URL = "http://no/brreg/saksys/grunndata/ws/ErFr/hentRolleutskriftRequest"
+        const val REQUEST_TIMEOUT_MS = 20_000
     }
 
-    private fun createBean(beanName: String): ErFr {
+    private val hentRolleutskriftClient: ErFr = createSoapClientBean(HENT_ROLLEUTSKRIFT_SERVICE_URL)
+
+    fun hentRolleutskrift(fnr: String): generated.rolleutskrift.Grunndata {
+        val startMs = System.currentTimeMillis()
+        val response =
+            try {
+                hentRolleutskriftClient.hentRolleutskrift(username, password, fnr)
+            } catch (ex: Exception) {
+                val endMs = System.currentTimeMillis()
+                logger.error("Feil ved henting av rolleutskrift (etter ${endMs - startMs} ms)")
+                throw ex
+            }
+        val deserializedResponse =
+            try {
+                JAXB.unmarshal(StringReader(response), generated.rolleutskrift.Grunndata::class.java)
+            } catch (ex: Exception) {
+                logger.error("Feil ved deserialisering av respons", ex)
+                throw ex
+            }
+        return deserializedResponse
+    }
+
+    private fun createSoapClientBean(serviceUrl: String): ErFr {
         val factory = JaxWsProxyFactoryBean()
         factory.serviceClass = ErFr::class.java
         factory.address = brregUrl
-        factory.handlers.add(HeaderOutHandler(beanName))
+        factory.handlers.add(HeaderOutHandler(serviceUrl))
 
         val properties: MutableMap<String, Any> = HashMap()
         // default er 30 sek (30000ms)
-        val timeoutMS = 20000
+        val timeoutMS = REQUEST_TIMEOUT_MS
         properties["javax.xml.ws.client.connectionTimeout"] = timeoutMS
         properties["javax.xml.ws.client.receiveTimeout"] = timeoutMS
         factory.properties = properties
@@ -61,8 +70,6 @@ class BrregSoapClient(
         return factory.create() as ErFr
     }
 }
-
-private val HENT_ROLLEUTSKRIFT = "http://no/brreg/saksys/grunndata/ws/ErFr/hentRolleutskriftRequest"
 
 private class HeaderOutHandler(
     private val url: String,
