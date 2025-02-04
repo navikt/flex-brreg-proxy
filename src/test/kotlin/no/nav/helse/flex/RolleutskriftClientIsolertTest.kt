@@ -18,7 +18,7 @@ class RolleutskriftClientIsolertTest : FellesTestOppsett() {
 
     @Test
     fun `burde retyre på feil`() {
-        `when`(brregSoapClient.hentRolleutskrift(anyString())).thenThrow(RuntimeException("Test error"))
+        `when`(brregSoapClient.hentRolleutskrift(anyString())).thenThrow(SoapServiceException("Test error"))
 
         runCatching {
             rolleutskriftClient.hentRolleutskriftRaw("12345678901")
