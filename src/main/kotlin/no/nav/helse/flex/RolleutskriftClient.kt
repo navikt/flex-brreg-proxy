@@ -8,6 +8,10 @@ import org.springframework.stereotype.Component
 class RolleutskriftClient(
     private val brregSoapClient: BrregSoapClient,
 ) {
-    @Retryable(include = [Exception::class], maxAttempts = 3, backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"))
-    fun hentRolleutskriftRaw(fnr: String): generated.rolleutskrift.Grunndata? = brregSoapClient.hentRolleutskrift(fnr = fnr)
+    @Retryable(
+        include = [SoapServiceException::class],
+        maxAttempts = 3,
+        backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
+    )
+    fun hentRolleutskriftRaw(fnr: String): generated.rolleutskrift.Grunndata = brregSoapClient.hentRolleutskrift(fnr = fnr)
 }

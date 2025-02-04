@@ -41,15 +41,17 @@ class BrregSoapClient(
                 hentRolleutskriftClient.hentRolleutskrift(username, password, fnr)
             } catch (ex: Exception) {
                 val endMs = System.currentTimeMillis()
-                logger.error("Feil ved henting av rolleutskrift (etter ${endMs - startMs} ms)")
-                throw ex
+                val melding = "Feil ved henting av rolleutskrift (etter ${endMs - startMs} ms)"
+                logger.error(melding)
+                throw SoapServiceException(melding, ex)
             }
         val deserializedResponse =
             try {
                 JAXB.unmarshal(StringReader(response), generated.rolleutskrift.Grunndata::class.java)
             } catch (ex: Exception) {
-                logger.error("Feil ved deserialisering av respons", ex)
-                throw ex
+                val melding = "Feil ved deserialisering av respons"
+                logger.error(melding)
+                throw SoapDeserializationException(melding, ex)
             }
         return deserializedResponse
     }
@@ -60,13 +62,13 @@ class BrregSoapClient(
         factory.address = brregUrl
         factory.handlers.add(HeaderOutHandler(serviceUrl))
 
-        val properties: MutableMap<String, Any> = HashMap()
         // default er 30 sek (30000ms)
         val timeoutMS = REQUEST_TIMEOUT_MS
-        properties["javax.xml.ws.client.connectionTimeout"] = timeoutMS
-        properties["javax.xml.ws.client.receiveTimeout"] = timeoutMS
-        factory.properties = properties
-
+        factory.properties =
+            mapOf(
+                "javax.xml.ws.client.connectionTimeout" to timeoutMS,
+                "javax.xml.ws.client.receiveTimeout" to timeoutMS,
+            )
         return factory.create() as ErFr
     }
 }
