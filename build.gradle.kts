@@ -33,10 +33,15 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
+
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.retry:spring-retry:1.3.4")
+
+    implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
+    // Påkrevd av token-validation-spring
+    implementation("org.hibernate.validator:hibernate-validator")
 
     implementation("org.apache.commons:commons-text:$commonsTextVersion")
     implementation("io.micrometer:micrometer-registry-prometheus")

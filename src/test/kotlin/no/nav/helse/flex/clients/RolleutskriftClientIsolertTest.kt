@@ -1,5 +1,6 @@
-package no.nav.helse.flex
+package no.nav.helse.flex.clients
 
+import no.nav.helse.flex.FellesTestOppsett
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.reset
@@ -9,7 +10,7 @@ import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 
-class RolleutskriftClientTest : FellesTestOppsett() {
+class RolleutskriftClientIsolertTest : FellesTestOppsett() {
     @MockitoBean
     lateinit var brregSoapClient: BrregSoapClient
 
@@ -18,7 +19,7 @@ class RolleutskriftClientTest : FellesTestOppsett() {
 
     @Test
     fun `burde retyre på feil`() {
-        `when`(brregSoapClient.hentRolleutskrift(anyString())).thenThrow(RuntimeException("Test error"))
+        `when`(brregSoapClient.hentRolleutskrift(anyString())).thenThrow(SoapServiceException("Test error"))
 
         runCatching {
             rolleutskriftClient.hentRolleutskriftRaw("12345678901")
