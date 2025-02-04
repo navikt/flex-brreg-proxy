@@ -7,6 +7,7 @@ import no.nav.security.mock.oauth2.MockOAuth2Server
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.`should be equal to`
+import org.amshove.kluent.shouldNotBeNull
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -65,8 +66,7 @@ class BrregApiTest : FellesTestOppsett() {
                     ).andExpect(MockMvcResultMatchers.status().isOk)
                     .andReturn()
                     .response.contentAsString
-
-            println(result)
+            result.shouldNotBeNull()
         }
 
         @Test
