@@ -3,19 +3,17 @@ package no.nav.helse.flex
 import generated.rolleutskrift.Grunndata
 import no.nav.helse.flex.config.logger
 import no.nav.helse.flex.config.serialisertTilString
-import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
-@Profile("disabled")
 @Component
 class BrregScheduledCaller(
     private val rolleutskriftClient: RolleutskriftClient,
 ) {
     private val log = logger()
 
-    @Scheduled(initialDelay = 1, fixedDelay = 30, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(initialDelay = 1, fixedDelay = 120, timeUnit = TimeUnit.SECONDS)
     fun callBrreg() {
         log.info("Kaller på brreg")
         val res = rolleutskriftClient.hentRolleutskriftRaw("04817797240")
