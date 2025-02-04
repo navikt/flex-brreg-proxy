@@ -27,6 +27,7 @@ val logstashLogbackEncoderVersion = "8.0"
 val kluentVersion = "1.73"
 val commonsTextVersion = "1.12.0"
 val tokenSupportVersion = "5.0.5"
+val apacheCxfVersion = "3.4.10"
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
@@ -34,14 +35,39 @@ dependencies {
     implementation(kotlin("reflect"))
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("org.springframework.retry:spring-retry:1.3.4")
+
     implementation("org.apache.commons:commons-text:$commonsTextVersion")
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoderVersion")
 
+    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$apacheCxfVersion")
+    implementation("org.apache.cxf:cxf-rt-transports-http:$apacheCxfVersion")
+
+    implementation("jakarta.xml.bind:jakarta.xml.bind-api:2.3.3")
+    implementation("org.glassfish.jaxb:jaxb-xjc:2.3.5")
+    implementation("com.sun.xml.bind:jaxb-impl:2.3.5")
+
+    // wsdl2java runtime-dependencies (copy-pasted fra https://github.com/nilsmagnus/wsdl2java/blob/master/src/main/groovy/no/nils/wsdl2java/Wsdl2JavaPlugin.groovy):
+    implementation("javax.xml.bind:jaxb-api:2.3.1")
+    implementation("javax.xml.ws:jaxws-api:2.3.1")
+    implementation("org.glassfish.jaxb:jaxb-runtime:2.3.5")
+    implementation("org.glassfish.main.javaee-api:javax.jws:3.1.2.2")
+    implementation("com.sun.xml.messaging.saaj:saaj-impl:1.5.3")
+
     testImplementation("no.nav.security:token-validation-spring-test:$tokenSupportVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
+}
+
+configure<SourceSetContainer> {
+    named("main") {
+        println(layout.buildDirectory)
+        java.srcDir("src/main/java")
+        java.srcDir("src/generated/java")
+    }
 }
 
 kotlin {
