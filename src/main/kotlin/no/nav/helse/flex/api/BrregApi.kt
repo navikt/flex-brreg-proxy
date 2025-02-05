@@ -47,8 +47,32 @@ class BrregApi(
             }
         return ResponseEntity.ok(jsonResult)
     }
+
+    @PostMapping("/api/v1/roller")
+    @ProtectedWithClaims(issuer = "azureator")
+    fun hentRoller(
+        @RequestBody request: HentRollerRequest,
+    ): ResponseEntity<List<Rolle>> {
+        val fnr = request.fnr
+        val rolleTyper = request.rolleTyper
+
+        val result =
+            try {
+                rolleutskriftClient.hentRoller(fnr, rolleTyper)
+            } catch (ex: SoapServiceException) {
+                return ResponseEntity
+                    .status(HttpStatus.BAD_GATEWAY)
+                    .body(emptyList())
+            }
+        return ResponseEntity.ok(result)
+    }
 }
 
 data class HentRolleutskriftRequest(
     val fnr: String,
+)
+
+data class HentRollerRequest(
+    val fnr: String,
+    val rolleTyper: List<RolleType>? = null,
 )
