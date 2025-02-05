@@ -51,7 +51,7 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$apacheCxfVersion")
     implementation("org.apache.cxf:cxf-rt-transports-http:$apacheCxfVersion")
 
-    implementation("jakarta.xml.bind:jakarta.xml.bind-api:2.3.3")
+    implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
     implementation("org.glassfish.jaxb:jaxb-xjc:2.3.5")
     implementation("com.sun.xml.bind:jaxb-impl:2.3.5")
 
