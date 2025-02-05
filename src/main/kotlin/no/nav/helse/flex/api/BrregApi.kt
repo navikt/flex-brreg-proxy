@@ -63,6 +63,10 @@ class BrregApi(
                 return ResponseEntity
                     .status(HttpStatus.BAD_GATEWAY)
                     .body(emptyList())
+            } catch (ex: SoapDeserializationException) {
+                return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(emptyList())
             }
         return ResponseEntity.ok(result)
     }

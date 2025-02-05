@@ -123,7 +123,7 @@ fun lagRolleutskriftSoapRespons(fnr: String = "2020010199999"): String =
     &lt;/grunndata&gt;
     """.trimIndent().wrapWithXmlEnvelope()
 
-private fun String.wrapWithXmlEnvelope(): String =
+fun String.wrapWithXmlEnvelope(): String =
     """
     <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
 
@@ -138,3 +138,10 @@ private fun String.wrapWithXmlEnvelope(): String =
 
     </soap:Envelope>
     """.trimIndent()
+
+fun lagGrunndataBase() =
+    """
+    &lt;?xml version="1.0"?&gt;
+    &lt;grunndata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.brreg.no/grunndata/hentRolleutskrift.xsd"&gt;
+    &lt;/grunndata&gt;
+    """.trimIndent().wrapWithXmlEnvelope()
