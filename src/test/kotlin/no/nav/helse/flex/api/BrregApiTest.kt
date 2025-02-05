@@ -60,8 +60,9 @@ class BrregApiTest : FellesTestOppsett() {
                 mockMvc
                     .perform(
                         MockMvcRequestBuilders
-                            .get("/api/v1/rolleutskrift/11111111111")
+                            .post("/api/v1/rolleutskrift")
                             .header("Authorization", "Bearer $token")
+                            .content("""{"fnr":"11111111111"}""")
                             .contentType(MediaType.APPLICATION_JSON),
                     ).andExpect(MockMvcResultMatchers.status().isOk)
                     .andReturn()
@@ -74,7 +75,8 @@ class BrregApiTest : FellesTestOppsett() {
             mockMvc
                 .perform(
                     MockMvcRequestBuilders
-                        .get("/api/v1/rolleutskrift/11111111111")
+                        .post("/api/v1/rolleutskrift")
+                        .content("""{"fnr":"11111111111"}""")
                         .contentType(MediaType.APPLICATION_JSON),
                 ).andExpect(MockMvcResultMatchers.status().isUnauthorized)
         }
