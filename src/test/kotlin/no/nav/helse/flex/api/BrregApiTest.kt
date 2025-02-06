@@ -4,14 +4,14 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.config.objectMapper
 import no.nav.helse.flex.config.serialisertTilString
+import no.nav.helse.flex.simpleDispatcher
 import no.nav.helse.flex.skapAzureJwt
-import no.nav.helse.flex.testdata.lagGrunndataBase
 import no.nav.helse.flex.testdata.lagRolleutskriftSoapRespons
+import no.nav.helse.flex.testdata.wrapWithXmlEnvelope
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.*
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -52,11 +52,12 @@ class BrregApiTest : FellesTestOppsett() {
     inner class HentRolleutskrift {
         @Test
         fun `burde returnere soap respons`() {
-            brregSoapServer.enqueue(
-                MockResponse()
-                    .setHeader("Content-Type", "application/xml")
-                    .setBody(lagRolleutskriftSoapRespons()),
-            )
+            brregSoapServer.dispatcher =
+                simpleDispatcher {
+                    MockResponse()
+                        .setHeader("Content-Type", "application/xml")
+                        .setBody(lagRolleutskriftSoapRespons())
+                }
 
             val token = oauthServer.skapAzureJwt()
 
@@ -74,14 +75,14 @@ class BrregApiTest : FellesTestOppsett() {
             result.shouldNotBeNull()
         }
 
-        @Disabled
         @Test
         fun `burde håndtere feil i soap respons og returnere BAD_GATEWAY`() {
-            brregSoapServer.enqueue(
-                MockResponse()
-                    .setHeader("Content-Type", "application/xml")
-                    .setBody("Feil i soap respons"),
-            )
+            brregSoapServer.dispatcher =
+                simpleDispatcher {
+                    MockResponse()
+                        .setHeader("Content-Type", "application/xml")
+                        .setBody("Feil i soap respons")
+                }
 
             val token = oauthServer.skapAzureJwt()
 
@@ -95,15 +96,14 @@ class BrregApiTest : FellesTestOppsett() {
                 ).andExpect(MockMvcResultMatchers.status().isBadGateway)
         }
 
-        // TODO fiks testen
-        @Disabled
         @Test
         fun `burde håndtere feil i deserialisering av soap respons og returnere INTERNAL_SERVER_ERROR`() {
-            brregSoapServer.enqueue(
-                MockResponse()
-                    .setHeader("Content-Type", "application/xml")
-                    .setBody(lagGrunndataBase()),
-            )
+            brregSoapServer.dispatcher =
+                simpleDispatcher {
+                    MockResponse()
+                        .setHeader("Content-Type", "application/xml")
+                        .setBody("test".wrapWithXmlEnvelope())
+                }
 
             val token = oauthServer.skapAzureJwt()
 
@@ -133,11 +133,12 @@ class BrregApiTest : FellesTestOppsett() {
     inner class HentRoller {
         @Test
         fun `burde returnere roller`() {
-            brregSoapServer.enqueue(
-                MockResponse()
-                    .setHeader("Content-Type", "application/xml")
-                    .setBody(lagRolleutskriftSoapRespons()),
-            )
+            brregSoapServer.dispatcher =
+                simpleDispatcher {
+                    MockResponse()
+                        .setHeader("Content-Type", "application/xml")
+                        .setBody(lagRolleutskriftSoapRespons())
+                }
 
             val token = oauthServer.skapAzureJwt()
 
@@ -166,11 +167,12 @@ class BrregApiTest : FellesTestOppsett() {
 
         @Test
         fun `burde kun returnere rolletyper som er spesifisert`() {
-            brregSoapServer.enqueue(
-                MockResponse()
-                    .setHeader("Content-Type", "application/xml")
-                    .setBody(lagRolleutskriftSoapRespons()),
-            )
+            brregSoapServer.dispatcher =
+                simpleDispatcher {
+                    MockResponse()
+                        .setHeader("Content-Type", "application/xml")
+                        .setBody(lagRolleutskriftSoapRespons())
+                }
 
             val token = oauthServer.skapAzureJwt()
 
@@ -198,14 +200,14 @@ class BrregApiTest : FellesTestOppsett() {
             }
         }
 
-        @Disabled
         @Test
         fun `burde håndtere feil i soap respons og returnere BAD_GATEWAY`() {
-            brregSoapServer.enqueue(
-                MockResponse()
-                    .setHeader("Content-Type", "application/xml")
-                    .setBody("Feil i soap respons"),
-            )
+            brregSoapServer.dispatcher =
+                simpleDispatcher {
+                    MockResponse()
+                        .setHeader("Content-Type", "application/xml")
+                        .setBody("Feil i soap respons")
+                }
 
             val token = oauthServer.skapAzureJwt()
 
@@ -219,15 +221,14 @@ class BrregApiTest : FellesTestOppsett() {
                 ).andExpect(MockMvcResultMatchers.status().isBadGateway)
         }
 
-        // TODO fiks testen
-        @Disabled
         @Test
         fun `burde håndtere feil i deserialisering av soap respons og returnere INTERNAL_SERVER_ERROR`() {
-            brregSoapServer.enqueue(
-                MockResponse()
-                    .setHeader("Content-Type", "application/xml")
-                    .setBody(lagGrunndataBase()),
-            )
+            brregSoapServer.dispatcher =
+                simpleDispatcher {
+                    MockResponse()
+                        .setHeader("Content-Type", "application/xml")
+                        .setBody("test".wrapWithXmlEnvelope())
+                }
 
             val token = oauthServer.skapAzureJwt()
 

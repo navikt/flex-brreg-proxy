@@ -17,7 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest
     properties = [
         "spring.main.allow-bean-definition-overriding=true",
         "BRREG_RETRY_BACKOFF_MS=1",
-        // "BRREG_TIMEOUT_MS=600",
+        "BRREG_TIMEOUT_MS=10",
     ],
 )
 @AutoConfigureMockMvc(print = MockMvcPrint.NONE, printOnlyOnFailure = false)
