@@ -61,7 +61,7 @@ dependencies {
     implementation("javax.xml.ws:jaxws-api:2.3.1")
     implementation("org.glassfish.jaxb:jaxb-runtime:2.3.5")
     implementation("org.glassfish.main.javaee-api:javax.jws:3.1.2.2")
-    implementation("com.sun.xml.messaging.saaj:saaj-impl:1.5.3")
+    implementation("com.sun.xml.messaging.saaj:saaj-impl:3.0.4")
 
     testImplementation("no.nav.security:token-validation-spring-test:$tokenSupportVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
