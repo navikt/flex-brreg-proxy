@@ -24,12 +24,13 @@ class BrregSoapClient(
     private val password: String,
     @Value("\${BRREG_URL}")
     private val brregUrl: String,
+    @Value("\${BRREG_TIMEOUT_MS:20000}")
+    private val requestTimeoutMs: Int,
 ) {
     private val logger = logger()
 
     companion object {
         const val HENT_ROLLEUTSKRIFT_SERVICE_URL = "http://no/brreg/saksys/grunndata/ws/ErFr/hentRolleutskriftRequest"
-        const val REQUEST_TIMEOUT_MS = 20_000
     }
 
     private val hentRolleutskriftClient: ErFr = createSoapClientBean(HENT_ROLLEUTSKRIFT_SERVICE_URL)
@@ -63,7 +64,7 @@ class BrregSoapClient(
         factory.handlers.add(HeaderOutHandler(serviceUrl))
 
         // default er 30 sek (30000ms)
-        val timeoutMS = REQUEST_TIMEOUT_MS
+        val timeoutMS = requestTimeoutMs
         factory.properties =
             mapOf(
                 "javax.xml.ws.client.connectionTimeout" to timeoutMS,

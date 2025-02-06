@@ -18,11 +18,24 @@ class RolleutskriftClientIsolertTest : FellesTestOppsett() {
     lateinit var rolleutskriftClient: RolleutskriftClient
 
     @Test
-    fun `burde retrye på feil`() {
+    fun `burde retrye på feil ved hentRolleutskrift`() {
         `when`(brregSoapClient.hentRolleutskrift(anyString())).thenThrow(SoapServiceException("Test error"))
 
         runCatching {
             rolleutskriftClient.hentRolleutskriftRaw("12345678901")
+        }
+
+        verify(brregSoapClient, times(3)).hentRolleutskrift(anyString())
+
+        reset(brregSoapClient)
+    }
+
+    @Test
+    fun `burde retrye på feil ved hentRoller`() {
+        `when`(brregSoapClient.hentRolleutskrift(anyString())).thenThrow(SoapServiceException("Test error"))
+
+        runCatching {
+            rolleutskriftClient.hentRoller("12345678901")
         }
 
         verify(brregSoapClient, times(3)).hentRolleutskrift(anyString())
