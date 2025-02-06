@@ -43,6 +43,9 @@ spec:
     {{#each external-host}}
         - host: {{this}}
     {{/each}}
+    inbound:
+      rules:
+        - application: sykepengesoknad-backend
   observability:
     autoInstrumentation:
       enabled: true

@@ -42,6 +42,7 @@ dependencies {
     implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
     // Påkrevd av token-validation-spring
     implementation("org.hibernate.validator:hibernate-validator")
+    implementation("no.nav.security:token-client-spring:$tokenSupportVersion")
 
     implementation("org.apache.commons:commons-text:$commonsTextVersion")
     implementation("io.micrometer:micrometer-registry-prometheus")
