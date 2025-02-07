@@ -37,8 +37,6 @@ spec:
       enabled: true
       allowAllUsers: false
       tenant: {{azureTenant}}
-  tokenx:
-    enabled: true
   accessPolicy:
     outbound:
       external:
