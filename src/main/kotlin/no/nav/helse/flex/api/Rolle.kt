@@ -1,11 +1,12 @@
 package no.nav.helse.flex.api
 
 class Rolle(
-    val rolleType: RolleType,
-    val organisasjonsnummer: String,
+    val rolletype: Rolletype,
+    val orgnummer: String,
+    val orgnavn: String,
 )
 
-enum class RolleType(
+enum class Rolletype(
     val beskrivelse: List<String>,
 ) {
     ADOS(listOf("Administrativ enhet - offentlig sektor")),
@@ -47,6 +48,6 @@ enum class RolleType(
     fun erSelvstendigNaringdrivende() = this == INNH || this == DTPR || this == DTSO || this == KOMP
 
     companion object {
-        fun fromBeskrivelse(beskrivelse: String): RolleType = entries.find { it.beskrivelse.contains(beskrivelse) } ?: UKJENT
+        fun fromBeskrivelse(beskrivelse: String): Rolletype = entries.find { it.beskrivelse.contains(beskrivelse) } ?: UKJENT
     }
 }

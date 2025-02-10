@@ -49,87 +49,6 @@ class BrregApiTest : FellesTestOppsett() {
     }
 
     @Nested
-    inner class HentRolleutskrift {
-        @Test
-        fun `burde returnere soap respons`() {
-            brregSoapServer.dispatcher =
-                simpleDispatcher {
-                    MockResponse()
-                        .setHeader("Content-Type", "application/xml")
-                        .setBody(lagRolleutskriftSoapRespons())
-                }
-
-            val token = oauthServer.skapAzureJwt()
-
-            val result =
-                mockMvc
-                    .perform(
-                        MockMvcRequestBuilders
-                            .post("/api/v1/rolleutskrift")
-                            .header("Authorization", "Bearer $token")
-                            .content("""{"fnr":"11111111111"}""")
-                            .contentType(MediaType.APPLICATION_JSON),
-                    ).andExpect(MockMvcResultMatchers.status().isOk)
-                    .andReturn()
-                    .response.contentAsString
-            result.shouldNotBeNull()
-        }
-
-        @Test
-        fun `burde håndtere feil i soap respons og returnere BAD_GATEWAY`() {
-            brregSoapServer.dispatcher =
-                simpleDispatcher {
-                    MockResponse()
-                        .setHeader("Content-Type", "application/xml")
-                        .setBody("Feil i soap respons")
-                }
-
-            val token = oauthServer.skapAzureJwt()
-
-            mockMvc
-                .perform(
-                    MockMvcRequestBuilders
-                        .post("/api/v1/rolleutskrift")
-                        .header("Authorization", "Bearer $token")
-                        .content("""{"fnr":"11111111111"}""")
-                        .contentType(MediaType.APPLICATION_JSON),
-                ).andExpect(MockMvcResultMatchers.status().isBadGateway)
-        }
-
-        @Test
-        fun `burde håndtere feil i deserialisering av soap respons og returnere INTERNAL_SERVER_ERROR`() {
-            brregSoapServer.dispatcher =
-                simpleDispatcher {
-                    MockResponse()
-                        .setHeader("Content-Type", "application/xml")
-                        .setBody("test".wrapWithXmlEnvelope())
-                }
-
-            val token = oauthServer.skapAzureJwt()
-
-            mockMvc
-                .perform(
-                    MockMvcRequestBuilders
-                        .post("/api/v1/rolleutskrift")
-                        .header("Authorization", "Bearer $token")
-                        .content("""{"fnr":"11111111111"}""")
-                        .contentType(MediaType.APPLICATION_JSON),
-                ).andExpect(MockMvcResultMatchers.status().isInternalServerError)
-        }
-
-        @Test
-        fun `burde feile uten token`() {
-            mockMvc
-                .perform(
-                    MockMvcRequestBuilders
-                        .post("/api/v1/rolleutskrift")
-                        .content("""{"fnr":"11111111111"}""")
-                        .contentType(MediaType.APPLICATION_JSON),
-                ).andExpect(MockMvcResultMatchers.status().isUnauthorized)
-        }
-    }
-
-    @Nested
     inner class HentRoller {
         @Test
         fun `burde returnere roller`() {
@@ -154,14 +73,19 @@ class BrregApiTest : FellesTestOppsett() {
                     .andReturn()
                     .response.contentAsString
 
-            val roller: List<Rolle> = objectMapper.readValue(result)
+            val rollerDto: RollerDto = objectMapper.readValue(result)
+            val roller = rollerDto.roller
             roller.size `should be equal to` 4
-            roller.forEach { it.organisasjonsnummer.shouldNotBeNullOrBlank() }
+            roller.forEach { it.orgnummer.shouldNotBeNullOrBlank() }
             roller.let {
-                it[0].rolleType.beskrivelse `should be equal to` RolleType.INNH.beskrivelse
-                it[1].rolleType.beskrivelse `should be equal to` RolleType.DTPR.beskrivelse
-                it[2].rolleType.beskrivelse `should be equal to` RolleType.DTSO.beskrivelse
-                it[3].rolleType.beskrivelse `should be equal to` RolleType.MEDL.beskrivelse
+                it[0].rolletype.beskrivelse `should be equal to` Rolletype.INNH.beskrivelse
+                it[0].orgnavn `should be equal to` "SELSKAP AS"
+                it[1].rolletype.beskrivelse `should be equal to` Rolletype.DTPR.beskrivelse
+                it[1].orgnavn `should be equal to` "DIDGERIDOO AS"
+                it[2].rolletype.beskrivelse `should be equal to` Rolletype.DTSO.beskrivelse
+                it[2].orgnavn `should be equal to` "ILA AS"
+                it[3].rolletype.beskrivelse `should be equal to` Rolletype.MEDL.beskrivelse
+                it[3].orgnavn `should be equal to` "NAV Boretteslag"
             }
         }
 
@@ -176,7 +100,7 @@ class BrregApiTest : FellesTestOppsett() {
 
             val token = oauthServer.skapAzureJwt()
 
-            val selvstendigNaringsdrivendeRoller = RolleType.entries.filter { it.erSelvstendigNaringdrivende() }
+            val selvstendigNaringsdrivendeRoller = Rolletype.entries.filter { it.erSelvstendigNaringdrivende() }
 
             val result =
                 mockMvc
@@ -190,13 +114,17 @@ class BrregApiTest : FellesTestOppsett() {
                     .andReturn()
                     .response.contentAsString
 
-            val roller: List<Rolle> = objectMapper.readValue(result)
+            val rollerDto: RollerDto = objectMapper.readValue(result)
+            val roller = rollerDto.roller
             roller.size `should be equal to` 3
-            roller.forEach { it.organisasjonsnummer.shouldNotBeNullOrBlank() }
+            roller.forEach { it.orgnummer.shouldNotBeNullOrBlank() }
             roller.let {
-                it[0].rolleType.beskrivelse `should be equal to` RolleType.INNH.beskrivelse
-                it[1].rolleType.beskrivelse `should be equal to` RolleType.DTPR.beskrivelse
-                it[2].rolleType.beskrivelse `should be equal to` RolleType.DTSO.beskrivelse
+                it[0].rolletype.beskrivelse `should be equal to` Rolletype.INNH.beskrivelse
+                it[0].orgnavn `should be equal to` "SELSKAP AS"
+                it[1].rolletype.beskrivelse `should be equal to` Rolletype.DTPR.beskrivelse
+                it[1].orgnavn `should be equal to` "DIDGERIDOO AS"
+                it[2].rolletype.beskrivelse `should be equal to` Rolletype.DTSO.beskrivelse
+                it[2].orgnavn `should be equal to` "ILA AS"
             }
         }
 
