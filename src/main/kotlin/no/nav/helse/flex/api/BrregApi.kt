@@ -1,6 +1,6 @@
 package no.nav.helse.flex.api
 
-import no.nav.helse.flex.clients.RolleutskriftClient
+import no.nav.helse.flex.clients.BrregService
 import no.nav.helse.flex.clients.SoapDeserializationException
 import no.nav.helse.flex.clients.SoapServiceException
 import no.nav.security.token.support.core.api.ProtectedWithClaims
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 class BrregApi(
-    private val rolleutskriftClient: RolleutskriftClient,
+    private val brregService: BrregService,
 ) {
     @GetMapping("/api/v1/sjekk-brreg-tilgang")
     @Unprotected
@@ -27,7 +27,7 @@ class BrregApi(
 
         val result =
             try {
-                rolleutskriftClient.hentRoller(fnr, rolleTyper)
+                brregService.hentRoller(fnr, rolleTyper)
             } catch (ex: SoapServiceException) {
                 return ResponseEntity
                     .status(HttpStatus.BAD_GATEWAY)

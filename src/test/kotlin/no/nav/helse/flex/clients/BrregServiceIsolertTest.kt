@@ -10,19 +10,19 @@ import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 
-class RolleutskriftClientIsolertTest : FellesTestOppsett() {
+class BrregServiceIsolertTest : FellesTestOppsett() {
     @MockitoBean
     lateinit var brregSoapClient: BrregSoapClient
 
     @Autowired
-    lateinit var rolleutskriftClient: RolleutskriftClient
+    lateinit var brregService: BrregService
 
     @Test
     fun `burde retrye på feil ved hentRoller`() {
         `when`(brregSoapClient.hentRolleutskrift(anyString())).thenThrow(SoapServiceException("Test error"))
 
         runCatching {
-            rolleutskriftClient.hentRoller("12345678901")
+            brregService.hentRoller("12345678901")
         }
 
         verify(brregSoapClient, times(3)).hentRolleutskrift(anyString())

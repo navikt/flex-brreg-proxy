@@ -7,7 +7,7 @@ import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 
 @Component
-class RolleutskriftClient(
+class BrregService(
     private val brregSoapClient: BrregSoapClient,
 ) {
     @Retryable(
