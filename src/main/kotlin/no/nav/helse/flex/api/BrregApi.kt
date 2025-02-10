@@ -78,5 +78,5 @@ data class HentRolleutskriftRequest(
 
 data class HentRollerRequest(
     val fnr: String,
-    val rolleTyper: List<RolleType>? = null,
+    val rolleTyper: List<Rolletype>? = null,
 )

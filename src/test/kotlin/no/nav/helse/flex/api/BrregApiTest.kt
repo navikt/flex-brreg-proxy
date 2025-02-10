@@ -156,12 +156,16 @@ class BrregApiTest : FellesTestOppsett() {
 
             val roller: List<Rolle> = objectMapper.readValue(result)
             roller.size `should be equal to` 4
-            roller.forEach { it.organisasjonsnummer.shouldNotBeNullOrBlank() }
+            roller.forEach { it.orgnummer.shouldNotBeNullOrBlank() }
             roller.let {
-                it[0].rolleType.beskrivelse `should be equal to` RolleType.INNH.beskrivelse
-                it[1].rolleType.beskrivelse `should be equal to` RolleType.DTPR.beskrivelse
-                it[2].rolleType.beskrivelse `should be equal to` RolleType.DTSO.beskrivelse
-                it[3].rolleType.beskrivelse `should be equal to` RolleType.MEDL.beskrivelse
+                it[0].rolletype.beskrivelse `should be equal to` Rolletype.INNH.beskrivelse
+                it[0].orgnavn `should be equal to` "SELSKAP AS"
+                it[1].rolletype.beskrivelse `should be equal to` Rolletype.DTPR.beskrivelse
+                it[1].orgnavn `should be equal to` "DIDGERIDOO AS"
+                it[2].rolletype.beskrivelse `should be equal to` Rolletype.DTSO.beskrivelse
+                it[2].orgnavn `should be equal to` "ILA AS"
+                it[3].rolletype.beskrivelse `should be equal to` Rolletype.MEDL.beskrivelse
+                it[3].orgnavn `should be equal to` "NAV Boretteslag"
             }
         }
 
@@ -176,7 +180,7 @@ class BrregApiTest : FellesTestOppsett() {
 
             val token = oauthServer.skapAzureJwt()
 
-            val selvstendigNaringsdrivendeRoller = RolleType.entries.filter { it.erSelvstendigNaringdrivende() }
+            val selvstendigNaringsdrivendeRoller = Rolletype.entries.filter { it.erSelvstendigNaringdrivende() }
 
             val result =
                 mockMvc
@@ -192,11 +196,14 @@ class BrregApiTest : FellesTestOppsett() {
 
             val roller: List<Rolle> = objectMapper.readValue(result)
             roller.size `should be equal to` 3
-            roller.forEach { it.organisasjonsnummer.shouldNotBeNullOrBlank() }
+            roller.forEach { it.orgnummer.shouldNotBeNullOrBlank() }
             roller.let {
-                it[0].rolleType.beskrivelse `should be equal to` RolleType.INNH.beskrivelse
-                it[1].rolleType.beskrivelse `should be equal to` RolleType.DTPR.beskrivelse
-                it[2].rolleType.beskrivelse `should be equal to` RolleType.DTSO.beskrivelse
+                it[0].rolletype.beskrivelse `should be equal to` Rolletype.INNH.beskrivelse
+                it[0].orgnavn `should be equal to` "SELSKAP AS"
+                it[1].rolletype.beskrivelse `should be equal to` Rolletype.DTPR.beskrivelse
+                it[1].orgnavn `should be equal to` "DIDGERIDOO AS"
+                it[2].rolletype.beskrivelse `should be equal to` Rolletype.DTSO.beskrivelse
+                it[2].orgnavn `should be equal to` "ILA AS"
             }
         }
 
