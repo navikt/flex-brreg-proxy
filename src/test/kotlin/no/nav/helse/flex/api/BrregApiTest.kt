@@ -154,7 +154,8 @@ class BrregApiTest : FellesTestOppsett() {
                     .andReturn()
                     .response.contentAsString
 
-            val roller: List<Rolle> = objectMapper.readValue(result)
+            val rollerDto: RollerDto = objectMapper.readValue(result)
+            val roller = rollerDto.roller
             roller.size `should be equal to` 4
             roller.forEach { it.orgnummer.shouldNotBeNullOrBlank() }
             roller.let {
@@ -194,7 +195,8 @@ class BrregApiTest : FellesTestOppsett() {
                     .andReturn()
                     .response.contentAsString
 
-            val roller: List<Rolle> = objectMapper.readValue(result)
+            val rollerDto: RollerDto = objectMapper.readValue(result)
+            val roller = rollerDto.roller
             roller.size `should be equal to` 3
             roller.forEach { it.orgnummer.shouldNotBeNullOrBlank() }
             roller.let {

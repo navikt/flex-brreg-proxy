@@ -52,7 +52,7 @@ class BrregApi(
     @ProtectedWithClaims(issuer = "azureator")
     fun hentRoller(
         @RequestBody request: HentRollerRequest,
-    ): ResponseEntity<List<Rolle>> {
+    ): ResponseEntity<RollerDto> {
         val fnr = request.fnr
         val rolleTyper = request.rolleTyper
 
@@ -62,15 +62,19 @@ class BrregApi(
             } catch (ex: SoapServiceException) {
                 return ResponseEntity
                     .status(HttpStatus.BAD_GATEWAY)
-                    .body(emptyList())
+                    .build()
             } catch (ex: SoapDeserializationException) {
                 return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(emptyList())
+                    .build()
             }
-        return ResponseEntity.ok(result)
+        return ResponseEntity.ok(RollerDto(result))
     }
 }
+
+data class RollerDto(
+    val roller: List<Rolle>,
+)
 
 data class HentRolleutskriftRequest(
     val fnr: String,
