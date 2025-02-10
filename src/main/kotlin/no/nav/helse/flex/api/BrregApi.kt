@@ -1,11 +1,12 @@
 package no.nav.helse.flex.api
 
 import no.nav.helse.flex.clients.BrregService
-import no.nav.helse.flex.clients.SoapDeserializationException
+import no.nav.helse.flex.clients.BrregStatus
+import no.nav.helse.flex.clients.Rolle
+import no.nav.helse.flex.clients.Rolletype
 import no.nav.helse.flex.clients.SoapServiceException
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.api.Unprotected
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -13,9 +14,21 @@ import org.springframework.web.bind.annotation.*
 class BrregApi(
     private val brregService: BrregService,
 ) {
-    @GetMapping("/api/v1/sjekk-brreg-tilgang")
+    @GetMapping("/api/v1/brreg-status")
     @Unprotected
-    fun sjekkBrregTilgang(): ResponseEntity<Boolean> = ResponseEntity.ok(false)
+    fun sjekkBrregStatus(): ResponseEntity<BrregStatus> = ResponseEntity.ok(brregService.hentResponsStatus())
+
+    @GetMapping("/api/v1/brreg-status-ok")
+    @Unprotected
+    fun sjekkBrregStatusOk(): ResponseEntity<Boolean> {
+        val erStatusOk =
+            try {
+                brregService.hentResponsStatus().erOk()
+            } catch (_: SoapServiceException) {
+                false
+            }
+        return ResponseEntity.ok(erStatusOk)
+    }
 
     @PostMapping("/api/v1/roller")
     @ProtectedWithClaims(issuer = "azureator")
@@ -25,18 +38,8 @@ class BrregApi(
         val fnr = request.fnr
         val rolleTyper = request.rolleTyper
 
-        val result =
-            try {
-                brregService.hentRoller(fnr, rolleTyper)
-            } catch (ex: SoapServiceException) {
-                return ResponseEntity
-                    .status(HttpStatus.BAD_GATEWAY)
-                    .build()
-            } catch (ex: SoapDeserializationException) {
-                return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .build()
-            }
+        val result = brregService.hentRoller(fnr, rolleTyper)
+
         return ResponseEntity.ok(RollerDto(result))
     }
 }

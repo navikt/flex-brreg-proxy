@@ -1,4 +1,4 @@
-package no.nav.helse.flex.api
+package no.nav.helse.flex.clients
 
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
@@ -59,11 +59,11 @@ class RolleTest {
     @ParameterizedTest
     @EnumSource(RolletypeParam::class)
     fun `burde mappe rolletyper`(rolletypeParam: RolletypeParam) {
-        Rolletype.fromBeskrivelse(rolletypeParam.beskrivelse) `should be equal to` rolletypeParam.rolletype
+        Rolletype.Companion.fromBeskrivelse(rolletypeParam.beskrivelse) `should be equal to` rolletypeParam.rolletype
     }
 
     @Test
     fun `burde mappe rolletype til ukjent ved alle andre beskrivelser`() {
-        Rolletype.fromBeskrivelse("tilfeldig beskrivelse") `should be equal to` Rolletype.UKJENT
+        Rolletype.Companion.fromBeskrivelse("tilfeldig beskrivelse") `should be equal to` Rolletype.UKJENT
     }
 }

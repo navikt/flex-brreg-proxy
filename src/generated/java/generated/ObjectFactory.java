@@ -1,6 +1,8 @@
 
 package generated;
 
+import generated.roller.Grunndata;
+
 import javax.xml.bind.annotation.XmlRegistry;
 
 

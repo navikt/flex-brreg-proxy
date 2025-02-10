@@ -2,12 +2,15 @@ package no.nav.helse.flex.api
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.FellesTestOppsett
+import no.nav.helse.flex.clients.BrregStatus
+import no.nav.helse.flex.clients.Rolletype
 import no.nav.helse.flex.config.objectMapper
 import no.nav.helse.flex.config.serialisertTilString
 import no.nav.helse.flex.simpleDispatcher
 import no.nav.helse.flex.skapAzureJwt
+import no.nav.helse.flex.testdata.lagRollerSoapResponse
 import no.nav.helse.flex.testdata.lagRolleutskriftSoapRespons
-import no.nav.helse.flex.testdata.wrapWithXmlEnvelope
+import no.nav.helse.flex.testdata.wrapWithRolleutskriftXmlEnvelope
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -15,6 +18,7 @@ import org.amshove.kluent.*
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -31,25 +35,116 @@ class BrregApiTest : FellesTestOppsett() {
     lateinit var brregSoapServer: MockWebServer
 
     @Nested
-    inner class CheckBrregAuth {
+    inner class BrregStatusOkEndepunkt {
         @Test
-        fun `burde ikke ha tilgang til brreg`() {
+        fun `burde ha status ok`() {
+            brregSoapServer.dispatcher =
+                simpleDispatcher {
+                    MockResponse()
+                        .setHeader("Content-Type", "application/xml")
+                        .setBody(lagRollerSoapResponse(headerHovedStatus = 0))
+                }
+
             val result =
                 mockMvc
-                    .perform(
-                        MockMvcRequestBuilders
-                            .get("/api/v1/sjekk-brreg-tilgang")
-                            .contentType(MediaType.APPLICATION_JSON),
-                    ).andExpect(MockMvcResultMatchers.status().isOk)
+                    .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status-ok"))
+                    .andExpect(MockMvcResultMatchers.status().isOk)
+                    .andReturn()
+                    .response.contentAsString
+
+            result `should be equal to` "true"
+        }
+
+        @Test
+        fun `burde ha status ikke ok ved feil status`() {
+            brregSoapServer.dispatcher =
+                simpleDispatcher {
+                    MockResponse()
+                        .setHeader("Content-Type", "application/xml")
+                        .setBody(lagRollerSoapResponse(headerHovedStatus = -1))
+                }
+
+            val result =
+                mockMvc
+                    .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status-ok"))
+                    .andExpect(MockMvcResultMatchers.status().isOk)
                     .andReturn()
                     .response.contentAsString
 
             result `should be equal to` "false"
         }
+
+        @Test
+        fun `burde ha status ikke ok ved feil i soap api`() {
+            brregSoapServer.dispatcher =
+                simpleDispatcher {
+                    MockResponse()
+                        .setHeader("Content-Type", "application/xml")
+                        .setStatus(HttpStatus.UNAUTHORIZED.name)
+                }
+
+            val result =
+                mockMvc
+                    .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status-ok"))
+                    .andExpect(MockMvcResultMatchers.status().isOk)
+                    .andReturn()
+                    .response.contentAsString
+
+            result `should be equal to` "false"
+        }
+
+        @Test
+        fun `burde ikke kreve authentisering`() {
+            brregSoapServer.dispatcher =
+                simpleDispatcher {
+                    MockResponse()
+                        .setHeader("Content-Type", "application/xml")
+                        .setBody(lagRollerSoapResponse())
+                }
+            mockMvc
+                .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status-ok"))
+                .andExpect(MockMvcResultMatchers.status().isOk)
+        }
     }
 
     @Nested
-    inner class HentRoller {
+    inner class BrregStatusEndepunkt {
+        @Test
+        fun `burde ha status riktig status`() {
+            brregSoapServer.dispatcher =
+                simpleDispatcher {
+                    MockResponse()
+                        .setHeader("Content-Type", "application/xml")
+                        .setBody(lagRollerSoapResponse(headerHovedStatus = 500))
+                }
+
+            val result =
+                mockMvc
+                    .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status"))
+                    .andExpect(MockMvcResultMatchers.status().isOk)
+                    .andReturn()
+                    .response.contentAsString
+
+            val status: BrregStatus = objectMapper.readValue(result)
+            status.hovedStatus `should be equal to` 500
+        }
+
+        @Test
+        fun `burde ikke kreve authentisering`() {
+            brregSoapServer.dispatcher =
+                simpleDispatcher {
+                    MockResponse()
+                        .setHeader("Content-Type", "application/xml")
+                        .setBody(lagRollerSoapResponse())
+                }
+            mockMvc
+                .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status"))
+                .andExpect(MockMvcResultMatchers.status().isOk)
+        }
+    }
+
+    @Nested
+    inner class HentRollerEndepunkt {
         @Test
         fun `burde returnere roller`() {
             brregSoapServer.dispatcher =
@@ -155,7 +250,7 @@ class BrregApiTest : FellesTestOppsett() {
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/xml")
-                        .setBody("test".wrapWithXmlEnvelope())
+                        .setBody(wrapWithRolleutskriftXmlEnvelope("test"))
                 }
 
             val token = oauthServer.skapAzureJwt()

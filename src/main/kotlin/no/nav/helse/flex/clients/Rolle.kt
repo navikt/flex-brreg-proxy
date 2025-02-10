@@ -1,4 +1,4 @@
-package no.nav.helse.flex.api
+package no.nav.helse.flex.clients
 
 class Rolle(
     val rolletype: Rolletype,
