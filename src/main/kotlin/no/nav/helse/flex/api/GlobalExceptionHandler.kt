@@ -1,6 +1,8 @@
 package no.nav.helse.flex.api
 
 import jakarta.servlet.http.HttpServletRequest
+import no.nav.helse.flex.clients.SoapDeserializationException
+import no.nav.helse.flex.clients.SoapServiceException
 import no.nav.helse.flex.config.logger
 import no.nav.security.token.support.core.exceptions.JwtTokenInvalidClaimException
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
@@ -30,6 +32,8 @@ class GlobalExceptionHandler {
 
                 ResponseEntity(ApiError(ex.reason), ex.httpStatus)
             }
+            is SoapServiceException -> skapResponseEntity(HttpStatus.BAD_GATEWAY)
+            is SoapDeserializationException -> skapResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
             is JwtTokenInvalidClaimException -> skapResponseEntity(HttpStatus.UNAUTHORIZED)
             is JwtTokenUnauthorizedException -> skapResponseEntity(HttpStatus.UNAUTHORIZED)
             is HttpMediaTypeNotAcceptableException -> skapResponseEntity(HttpStatus.NOT_ACCEPTABLE)

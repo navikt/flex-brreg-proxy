@@ -1,6 +1,5 @@
 package no.nav.helse.flex.clients
 
-import generated.rolleutskrift.Grunndata
 import jakarta.xml.soap.SOAPException
 import no.brreg.saksys.grunndata.ws.ErFr
 import no.nav.helse.flex.config.logger
@@ -15,6 +14,8 @@ import javax.xml.ws.handler.MessageContext
 import javax.xml.ws.handler.soap.SOAPHandler
 import javax.xml.ws.handler.soap.SOAPMessageContext
 import kotlin.jvm.java
+import generated.roller.Grunndata as RollerGrunndata
+import generated.rolleutskrift.Grunndata as RolleutskriftGrunndata
 
 @Component
 class BrregSoapClient(
@@ -31,11 +32,35 @@ class BrregSoapClient(
 
     companion object {
         const val HENT_ROLLEUTSKRIFT_SERVICE_URL = "http://no/brreg/saksys/grunndata/ws/ErFr/hentRolleutskriftRequest"
+        const val HENT_ROLLER_SERVICE_URL = "http://no/brreg/saksys/grunndata/ws/ErFr/hentRollerRequest"
     }
 
     private val hentRolleutskriftClient: ErFr = createSoapClientBean(HENT_ROLLEUTSKRIFT_SERVICE_URL)
+    private val hentRollerClient: ErFr = createSoapClientBean(HENT_ROLLER_SERVICE_URL)
 
-    fun hentRolleutskrift(fnr: String): Grunndata {
+    fun hentRoller(orgnummer: String): RollerGrunndata {
+        val startMs = System.currentTimeMillis()
+        val response =
+            try {
+                hentRollerClient.hentRoller(username, password, orgnummer)
+            } catch (ex: Exception) {
+                val endMs = System.currentTimeMillis()
+                val melding = "Feil ved henting av roller (etter ${endMs - startMs} ms)"
+                logger.error(melding)
+                throw SoapServiceException(melding, ex)
+            }
+        val deserializedResponse =
+            try {
+                JAXB.unmarshal(StringReader(response), RollerGrunndata::class.java)
+            } catch (ex: Exception) {
+                val melding = "Feil ved deserialisering av roller respons"
+                logger.error(melding)
+                throw SoapDeserializationException(melding, ex)
+            }
+        return deserializedResponse
+    }
+
+    fun hentRolleutskrift(fnr: String): RolleutskriftGrunndata {
         val startMs = System.currentTimeMillis()
         val response =
             try {
@@ -48,7 +73,7 @@ class BrregSoapClient(
             }
         val deserializedResponse =
             try {
-                JAXB.unmarshal(StringReader(response), Grunndata::class.java)
+                JAXB.unmarshal(StringReader(response), RolleutskriftGrunndata::class.java)
             } catch (ex: Exception) {
                 val melding = "Feil ved deserialisering av respons"
                 logger.error(melding)

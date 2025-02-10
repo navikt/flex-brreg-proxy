@@ -1,5 +1,5 @@
 
-package generated;
+package generated.roller;
 
 import java.util.ArrayList;
 import java.util.List;
