@@ -47,11 +47,8 @@ class BrregApiTest : FellesTestOppsett() {
 
             val result =
                 mockMvc
-                    .perform(
-                        MockMvcRequestBuilders
-                            .get("/api/v1/brreg-status-ok")
-                            .contentType(MediaType.APPLICATION_JSON),
-                    ).andExpect(MockMvcResultMatchers.status().isOk)
+                    .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status-ok"))
+                    .andExpect(MockMvcResultMatchers.status().isOk)
                     .andReturn()
                     .response.contentAsString
 
@@ -69,11 +66,8 @@ class BrregApiTest : FellesTestOppsett() {
 
             val result =
                 mockMvc
-                    .perform(
-                        MockMvcRequestBuilders
-                            .get("/api/v1/brreg-status-ok")
-                            .contentType(MediaType.APPLICATION_JSON),
-                    ).andExpect(MockMvcResultMatchers.status().isOk)
+                    .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status-ok"))
+                    .andExpect(MockMvcResultMatchers.status().isOk)
                     .andReturn()
                     .response.contentAsString
 
@@ -91,11 +85,8 @@ class BrregApiTest : FellesTestOppsett() {
 
             val result =
                 mockMvc
-                    .perform(
-                        MockMvcRequestBuilders
-                            .get("/api/v1/brreg-status-ok")
-                            .contentType(MediaType.APPLICATION_JSON),
-                    ).andExpect(MockMvcResultMatchers.status().isOk)
+                    .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status-ok"))
+                    .andExpect(MockMvcResultMatchers.status().isOk)
                     .andReturn()
                     .response.contentAsString
 
@@ -104,13 +95,15 @@ class BrregApiTest : FellesTestOppsett() {
 
         @Test
         fun `burde ikke kreve authentisering`() {
+            brregSoapServer.dispatcher =
+                simpleDispatcher {
+                    MockResponse()
+                        .setHeader("Content-Type", "application/xml")
+                        .setBody(lagRollerSoapResponse())
+                }
             mockMvc
-                .perform(
-                    MockMvcRequestBuilders
-                        .get("/api/v1/brreg-status-ok")
-                        .content("""{"fnr":"11111111111"}""")
-                        .contentType(MediaType.APPLICATION_JSON),
-                ).andExpect(MockMvcResultMatchers.status().isOk)
+                .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status-ok"))
+                .andExpect(MockMvcResultMatchers.status().isOk)
         }
     }
 
@@ -127,11 +120,8 @@ class BrregApiTest : FellesTestOppsett() {
 
             val result =
                 mockMvc
-                    .perform(
-                        MockMvcRequestBuilders
-                            .get("/api/v1/brreg-status")
-                            .contentType(MediaType.APPLICATION_JSON),
-                    ).andExpect(MockMvcResultMatchers.status().isOk)
+                    .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status"))
+                    .andExpect(MockMvcResultMatchers.status().isOk)
                     .andReturn()
                     .response.contentAsString
 
@@ -141,13 +131,15 @@ class BrregApiTest : FellesTestOppsett() {
 
         @Test
         fun `burde ikke kreve authentisering`() {
+            brregSoapServer.dispatcher =
+                simpleDispatcher {
+                    MockResponse()
+                        .setHeader("Content-Type", "application/xml")
+                        .setStatus(HttpStatus.UNAUTHORIZED.name)
+                }
             mockMvc
-                .perform(
-                    MockMvcRequestBuilders
-                        .get("/api/v1/brreg-status")
-                        .content("""{"fnr":"11111111111"}""")
-                        .contentType(MediaType.APPLICATION_JSON),
-                ).andExpect(MockMvcResultMatchers.status().isOk)
+                .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status"))
+                .andExpect(MockMvcResultMatchers.status().isOk)
         }
     }
 
