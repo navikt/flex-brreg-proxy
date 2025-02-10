@@ -135,7 +135,7 @@ class BrregApiTest : FellesTestOppsett() {
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/xml")
-                        .setStatus(HttpStatus.UNAUTHORIZED.name)
+                        .setBody(lagRollerSoapResponse())
                 }
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status"))
