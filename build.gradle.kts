@@ -70,7 +70,6 @@ dependencies {
 
 configure<SourceSetContainer> {
     named("main") {
-        println(layout.buildDirectory)
         java.srcDir("src/main/java")
         java.srcDir("src/generated/java")
     }
@@ -93,6 +92,7 @@ tasks {
         testLogging {
             events("PASSED", "FAILED", "SKIPPED")
             exceptionFormat = TestExceptionFormat.FULL
+            showStandardStreams = true
         }
         failFast = false
     }
