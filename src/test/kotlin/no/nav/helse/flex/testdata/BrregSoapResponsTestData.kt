@@ -137,7 +137,7 @@ fun lagRolleutskriftErrorSoapRespons(headerHovedStatus: Int = 0): String =
               &lt;fodselsnr&gt;00000000000&lt;/fodselsnr&gt;
               &lt;hovedStatus&gt;$headerHovedStatus&lt;/hovedStatus&gt;
               &lt;underStatus&gt;
-                 &lt;underStatusMelding kode="-200"&gt;Test feil&lt;/underStatusMelding&gt;
+                 &lt;underStatusMelding kode="-200"&gt;Test-feil&lt;/underStatusMelding&gt;
               &lt;/underStatus&gt;
            &lt;/responseHeader&gt;
            &lt;melding tjeneste="hentRolleutskrift"/&gt;
