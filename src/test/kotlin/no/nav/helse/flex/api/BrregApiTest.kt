@@ -15,7 +15,9 @@ import no.nav.helse.flex.testdata.wrapWithRolleutskriftXmlEnvelope
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.QueueDispatcher
 import org.amshove.kluent.*
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,6 +36,11 @@ class BrregApiTest : FellesTestOppsett() {
 
     @Autowired
     lateinit var brregSoapServer: MockWebServer
+
+    @AfterEach
+    fun resetBrregSoapServer() {
+        brregSoapServer.dispatcher = QueueDispatcher()
+    }
 
     @Nested
     inner class BrregStatusOkEndepunkt {
