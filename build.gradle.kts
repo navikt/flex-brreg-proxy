@@ -53,7 +53,7 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-transports-http:$apacheCxfVersion")
 
     implementation("jakarta.xml.bind:jakarta.xml.bind-api:2.3.3")
-    implementation("org.glassfish.jaxb:jaxb-xjc:2.3.5")
+    implementation("org.glassfish.jaxb:jaxb-xjc:4.0.5")
     implementation("com.sun.xml.bind:jaxb-impl:2.3.5")
 
     // wsdl2java runtime-dependencies (copy-pasted fra https://github.com/nilsmagnus/wsdl2java/blob/master/src/main/groovy/no/nils/wsdl2java/Wsdl2JavaPlugin.groovy):
