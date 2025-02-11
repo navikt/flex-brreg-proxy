@@ -274,7 +274,7 @@ class BrregApiTest : FellesTestOppsett() {
         }
 
         @Test
-        fun `burde håndtere feil i responseHeader fra soap respons og returnere BAD_GATEWAY`() {
+        fun `burde håndtere feil i responseHeader fra Brreg og returnere BAD_GATEWAY`() {
             brregSoapServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
