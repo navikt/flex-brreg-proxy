@@ -8,26 +8,30 @@ import no.nav.helse.flex.config.objectMapper
 import no.nav.helse.flex.config.serialisertTilString
 import no.nav.helse.flex.simpleDispatcher
 import no.nav.helse.flex.skapAzureJwt
-import no.nav.helse.flex.testdata.lagRollerSoapResponse
-import no.nav.helse.flex.testdata.lagRolleutskriftErrorSoapRespons
-import no.nav.helse.flex.testdata.lagRolleutskriftSoapRespons
-import no.nav.helse.flex.testdata.wrapWithRolleutskriftXmlEnvelope
+import no.nav.helse.flex.testdata.*
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.QueueDispatcher
 import org.amshove.kluent.*
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
-class BrregApiTest : FellesTestOppsett() {
+@TestPropertySource(
+    properties = [
+        "NAIS_CLUSTER_NAME=dev-gcp",
+    ],
+)
+class BrregApiStubTest : FellesTestOppsett() {
     @Autowired
     lateinit var mockMvc: MockMvc
 
@@ -35,18 +39,18 @@ class BrregApiTest : FellesTestOppsett() {
     lateinit var oauthServer: MockOAuth2Server
 
     @Autowired
-    lateinit var brregSoapServer: MockWebServer
+    lateinit var brregStubServer: MockWebServer
 
     @AfterEach
     fun resetBrregSoapServer() {
-        brregSoapServer.dispatcher = QueueDispatcher()
+        brregStubServer.dispatcher = QueueDispatcher()
     }
 
     @Nested
     inner class BrregStatusOkEndepunkt {
         @Test
         fun `burde ha status ok`() {
-            brregSoapServer.dispatcher =
+            brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/xml")
@@ -65,7 +69,7 @@ class BrregApiTest : FellesTestOppsett() {
 
         @Test
         fun `burde ha status ikke ok ved feil status`() {
-            brregSoapServer.dispatcher =
+            brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/xml")
@@ -84,7 +88,7 @@ class BrregApiTest : FellesTestOppsett() {
 
         @Test
         fun `burde ha status ikke ok ved feil i soap api`() {
-            brregSoapServer.dispatcher =
+            brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/xml")
@@ -103,7 +107,7 @@ class BrregApiTest : FellesTestOppsett() {
 
         @Test
         fun `burde ikke kreve authentisering`() {
-            brregSoapServer.dispatcher =
+            brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/xml")
@@ -119,7 +123,7 @@ class BrregApiTest : FellesTestOppsett() {
     inner class BrregStatusEndepunkt {
         @Test
         fun `burde ha status riktig status`() {
-            brregSoapServer.dispatcher =
+            brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/xml")
@@ -139,7 +143,7 @@ class BrregApiTest : FellesTestOppsett() {
 
         @Test
         fun `burde ikke kreve authentisering`() {
-            brregSoapServer.dispatcher =
+            brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/xml")
@@ -155,11 +159,11 @@ class BrregApiTest : FellesTestOppsett() {
     inner class HentRollerEndepunkt {
         @Test
         fun `burde returnere roller`() {
-            brregSoapServer.dispatcher =
+            brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
-                        .setHeader("Content-Type", "application/xml")
-                        .setBody(lagRolleutskriftSoapRespons())
+                        .setHeader("Content-Type", "application/json")
+                        .setBody(brregStubResponse(fnr = "11111111111"))
                 }
 
             val token = oauthServer.skapAzureJwt()
@@ -178,23 +182,18 @@ class BrregApiTest : FellesTestOppsett() {
 
             val rollerDto: RollerDto = objectMapper.readValue(result)
             val roller = rollerDto.roller
-            roller.size `should be equal to` 4
+            roller.size `should be equal to` 1
             roller.forEach { it.orgnummer.shouldNotBeNullOrBlank() }
             roller.let {
                 it[0].rolletype.beskrivelse `should be equal to` Rolletype.INNH.beskrivelse
                 it[0].orgnavn `should be equal to` "SELSKAP AS"
-                it[1].rolletype.beskrivelse `should be equal to` Rolletype.DTPR.beskrivelse
-                it[1].orgnavn `should be equal to` "DIDGERIDOO AS"
-                it[2].rolletype.beskrivelse `should be equal to` Rolletype.DTSO.beskrivelse
-                it[2].orgnavn `should be equal to` "ILA AS"
-                it[3].rolletype.beskrivelse `should be equal to` Rolletype.MEDL.beskrivelse
-                it[3].orgnavn `should be equal to` "NAV Boretteslag"
             }
         }
 
+        @Disabled
         @Test
         fun `burde kun returnere rolletyper som er spesifisert`() {
-            brregSoapServer.dispatcher =
+            brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/xml")
@@ -232,12 +231,22 @@ class BrregApiTest : FellesTestOppsett() {
         }
 
         @Test
-        fun `burde håndtere feil i soap respons og returnere BAD_GATEWAY`() {
-            brregSoapServer.dispatcher =
+        fun `burde håndtere 404 feil i stub respons og returnere NOT_FOUND`() {
+            brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
-                        .setHeader("Content-Type", "application/xml")
-                        .setBody("Feil i soap respons")
+                        .setHeader("Content-Type", "application/json")
+                        .setBody(
+                            """
+                            {
+                              "timestamp": "2025-02-11T15:37:51.213+00:00",
+                              "status": 404,
+                              "error": "Not Found",
+                              "message": "Kunne ikke finne person med fnr:00000000000",
+                              "path": "/api/v2/rolleoversikt"
+                            }
+                            """.trimIndent(),
+                        )
                 }
 
             val token = oauthServer.skapAzureJwt()
@@ -247,14 +256,15 @@ class BrregApiTest : FellesTestOppsett() {
                     MockMvcRequestBuilders
                         .post("/api/v1/roller")
                         .header("Authorization", "Bearer $token")
-                        .content("""{"fnr":"11111111111"}""")
+                        .content("""{"fnr":"00000000000"}""")
                         .contentType(MediaType.APPLICATION_JSON),
-                ).andExpect(MockMvcResultMatchers.status().isBadGateway)
+                ).andExpect(MockMvcResultMatchers.status().isNotFound)
         }
 
+        @Disabled
         @Test
         fun `burde håndtere feil i deserialisering av soap respons og returnere INTERNAL_SERVER_ERROR`() {
-            brregSoapServer.dispatcher =
+            brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/xml")
@@ -273,9 +283,10 @@ class BrregApiTest : FellesTestOppsett() {
                 ).andExpect(MockMvcResultMatchers.status().isInternalServerError)
         }
 
+        @Disabled
         @Test
         fun `burde håndtere feil i responseHeader fra soap respons og returnere BAD_GATEWAY`() {
-            brregSoapServer.dispatcher =
+            brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/xml")

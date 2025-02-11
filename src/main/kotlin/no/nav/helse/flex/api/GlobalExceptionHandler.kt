@@ -1,9 +1,11 @@
 package no.nav.helse.flex.api
 
 import jakarta.servlet.http.HttpServletRequest
+import no.nav.helse.flex.clients.BrregStubClientException
 import no.nav.helse.flex.clients.SoapDeserializationException
 import no.nav.helse.flex.clients.SoapServiceException
 import no.nav.helse.flex.config.logger
+import no.nav.helse.flex.config.serialisertTilString
 import no.nav.security.token.support.core.exceptions.JwtTokenInvalidClaimException
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
 import org.springframework.http.HttpStatus
@@ -41,6 +43,10 @@ class GlobalExceptionHandler {
             is JwtTokenInvalidClaimException -> skapResponseEntity(HttpStatus.UNAUTHORIZED)
             is JwtTokenUnauthorizedException -> skapResponseEntity(HttpStatus.UNAUTHORIZED)
             is HttpMediaTypeNotAcceptableException -> skapResponseEntity(HttpStatus.NOT_ACCEPTABLE)
+            is BrregStubClientException -> {
+                val brregStubException = ex.serialisertTilString()
+                ResponseEntity(ApiError("Feil ved kall til BrregStub: $brregStubException"), HttpStatus.NOT_FOUND)
+            }
             else -> {
                 log.error("Internal server error - ${ex.message} - ${request.method}: ${request.requestURI}", ex)
                 skapResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)

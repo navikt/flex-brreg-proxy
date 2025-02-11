@@ -1,5 +1,6 @@
 package no.nav.helse.flex.clients
 
+import no.nav.helse.flex.config.EnvironmentToggles
 import no.nav.helse.flex.config.logger
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Component
 @Component
 class BrregService(
     private val brregSoapClient: BrregSoapClient,
+    private val brregStubClient: BrregStubClient,
+    private val environmentToggles: EnvironmentToggles,
 ) {
     private val log = logger()
 
@@ -23,12 +26,22 @@ class BrregService(
         return BrregStatus.fraResponseHeader(grunndata.responseHeader)
     }
 
+    fun hentRoller(
+        fnr: String,
+        rolleTyper: List<Rolletype>? = null,
+    ): List<Rolle> =
+        if (environmentToggles.isProduction()) {
+            hentRollerBrregSoap(fnr, rolleTyper)
+        } else {
+            hentRollerDolly(fnr)
+        }
+
     @Retryable(
         include = [SoapServiceException::class],
         maxAttempts = 3,
         backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
     )
-    fun hentRoller(
+    fun hentRollerBrregSoap(
         fnr: String,
         rolleTyper: List<Rolletype>? = null,
     ): List<Rolle> {
@@ -53,4 +66,14 @@ class BrregService(
                 rolle
             }.filter { it.rolletype in (rolleTyper ?: Rolletype.entries.toList()) }
     }
+
+    // TODO: filtrer på rolletyper?
+    fun hentRollerDolly(fnr: String): List<Rolle> =
+        brregStubClient.hentRolleoversikt(fnr)?.enheter?.map {
+            Rolle(
+                rolletype = Rolletype.fromBeskrivelse(it.rollebeskrivelse),
+                orgnummer = it.orgNr.toString(),
+                orgnavn = it.foretaksNavn.navn1,
+            )
+        } ?: emptyList()
 }
