@@ -8,6 +8,7 @@ open class SoapClientException(
 open class SoapServiceException(
     message: String,
     cause: Throwable? = null,
+    val brregStatus: BrregStatus? = null,
 ) : SoapClientException(message, cause)
 
 open class SoapDeserializationException(

@@ -76,7 +76,7 @@ class BrregSoapClient(
                 JAXB.unmarshal(StringReader(response), RolleutskriftGrunndata::class.java)
             } catch (ex: Exception) {
                 val melding = "Feil ved deserialisering av respons"
-                logger.error(melding)
+                logger.error(melding, ex)
                 throw SoapDeserializationException(melding, ex)
             }
         return deserializedResponse

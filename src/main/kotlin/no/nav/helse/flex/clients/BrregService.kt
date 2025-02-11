@@ -20,16 +20,7 @@ class BrregService(
         val navOrgnummerForSjekk = "889640782"
         val grunndata = brregSoapClient.hentRoller(orgnummer = navOrgnummerForSjekk)
 
-        return BrregStatus(
-            hovedStatus = grunndata.responseHeader.hovedStatus,
-            underStatuser =
-                grunndata.responseHeader.underStatus.underStatusMelding.map {
-                    BrregStatus.UnderStatus(
-                        underStatus = it.kode,
-                        melding = it.value,
-                    )
-                },
-        )
+        return BrregStatus.fraResponseHeader(grunndata.responseHeader)
     }
 
     @Retryable(
@@ -42,6 +33,12 @@ class BrregService(
         rolleTyper: List<Rolletype>? = null,
     ): List<Rolle> {
         val grunndata = brregSoapClient.hentRolleutskrift(fnr = fnr)
+
+        val status = BrregStatus.fraResponseHeader(grunndata.responseHeader)
+        if (!status.erOk() || grunndata.melding == null) {
+            throw SoapServiceException("Feil fra Brreg API ved henting av roller", brregStatus = status)
+        }
+
         return grunndata.melding.roller.enhet
             .map {
                 val rolle =
@@ -56,16 +53,4 @@ class BrregService(
                 rolle
             }.filter { it.rolletype in (rolleTyper ?: Rolletype.entries.toList()) }
     }
-}
-
-data class BrregStatus(
-    val hovedStatus: Int,
-    val underStatuser: List<UnderStatus>,
-) {
-    fun erOk() = hovedStatus == 0
-
-    data class UnderStatus(
-        val underStatus: Int,
-        val melding: String,
-    )
 }
