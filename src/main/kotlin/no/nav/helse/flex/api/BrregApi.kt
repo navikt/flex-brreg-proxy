@@ -30,6 +30,12 @@ class BrregApi(
         return ResponseEntity.ok(erStatusOk)
     }
 
+    @PostMapping("/api/v1/roller-ja")
+    @Unprotected
+    fun hentRollerJa(
+        @RequestBody request: HentRollerRequest,
+    ): ResponseEntity<RollerDto> = hentRoller(request)
+
     @PostMapping("/api/v1/roller")
     @ProtectedWithClaims(issuer = "azureator")
     fun hentRoller(
