@@ -36,6 +36,7 @@ class BrregService(
 
         val status = BrregStatus.fraResponseHeader(grunndata.responseHeader)
         if (!status.erOk() || grunndata.melding == null) {
+            log.error("Feil fra Brreg API ved henting av roller: ${status.somAnonymisertTekst()}")
             throw SoapServiceException("Feil fra Brreg API ved henting av roller", brregStatus = status)
         }
 
