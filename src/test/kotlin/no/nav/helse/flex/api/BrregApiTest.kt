@@ -9,12 +9,15 @@ import no.nav.helse.flex.config.serialisertTilString
 import no.nav.helse.flex.simpleDispatcher
 import no.nav.helse.flex.skapAzureJwt
 import no.nav.helse.flex.testdata.lagRollerSoapResponse
+import no.nav.helse.flex.testdata.lagRolleutskriftErrorSoapRespons
 import no.nav.helse.flex.testdata.lagRolleutskriftSoapRespons
 import no.nav.helse.flex.testdata.wrapWithRolleutskriftXmlEnvelope
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.QueueDispatcher
 import org.amshove.kluent.*
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -33,6 +36,11 @@ class BrregApiTest : FellesTestOppsett() {
 
     @Autowired
     lateinit var brregSoapServer: MockWebServer
+
+    @AfterEach
+    fun resetBrregSoapServer() {
+        brregSoapServer.dispatcher = QueueDispatcher()
+    }
 
     @Nested
     inner class BrregStatusOkEndepunkt {
@@ -263,6 +271,32 @@ class BrregApiTest : FellesTestOppsett() {
                         .content("""{"fnr":"11111111111"}""")
                         .contentType(MediaType.APPLICATION_JSON),
                 ).andExpect(MockMvcResultMatchers.status().isInternalServerError)
+        }
+
+        @Test
+        fun `burde håndtere feil i responseHeader fra soap respons og returnere BAD_GATEWAY`() {
+            brregSoapServer.dispatcher =
+                simpleDispatcher {
+                    MockResponse()
+                        .setHeader("Content-Type", "application/xml")
+                        .setBody(lagRolleutskriftErrorSoapRespons(headerHovedStatus = -100))
+                }
+
+            val token = oauthServer.skapAzureJwt()
+
+            mockMvc
+                .perform(
+                    MockMvcRequestBuilders
+                        .post("/api/v1/roller")
+                        .header("Authorization", "Bearer $token")
+                        .content("""{"fnr":"11111111111"}""")
+                        .contentType(MediaType.APPLICATION_JSON),
+                ).andExpect(MockMvcResultMatchers.status().isBadGateway)
+                .andExpect(
+                    MockMvcResultMatchers.jsonPath("reason").value(
+                        "Bad Gateway. Pga feil fra Brreg: <hovedStatus: -100, underStatuser: -200: Test feil>",
+                    ),
+                )
         }
 
         @Test

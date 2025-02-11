@@ -32,7 +32,11 @@ class GlobalExceptionHandler {
 
                 ResponseEntity(ApiError(ex.reason), ex.httpStatus)
             }
-            is SoapServiceException -> skapResponseEntity(HttpStatus.BAD_GATEWAY)
+            is SoapServiceException -> {
+                val brregStatusTekst = ex.brregStatus?.somTekst() ?: ""
+                val httpStatus = HttpStatus.BAD_GATEWAY
+                ResponseEntity(ApiError("${httpStatus.reasonPhrase}. Pga feil fra Brreg: <$brregStatusTekst>"), httpStatus)
+            }
             is SoapDeserializationException -> skapResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
             is JwtTokenInvalidClaimException -> skapResponseEntity(HttpStatus.UNAUTHORIZED)
             is JwtTokenUnauthorizedException -> skapResponseEntity(HttpStatus.UNAUTHORIZED)

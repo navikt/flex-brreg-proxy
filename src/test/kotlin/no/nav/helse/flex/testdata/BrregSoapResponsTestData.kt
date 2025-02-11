@@ -128,6 +128,23 @@ fun lagRolleutskriftSoapRespons(
         """.trimIndent(),
     )
 
+fun lagRolleutskriftErrorSoapRespons(headerHovedStatus: Int = 0): String =
+    wrapWithRolleutskriftXmlEnvelope(
+        """
+        &lt;?xml version="1.0"?&gt;
+        &lt;grunndata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.brreg.no/grunndata/hentRolleutskrift.xsd"&gt;
+           &lt;responseHeader prossessDato="2020-04-20" tjeneste="hentRolleutskrift"&gt;
+              &lt;fodselsnr&gt;00000000000&lt;/fodselsnr&gt;
+              &lt;hovedStatus&gt;$headerHovedStatus&lt;/hovedStatus&gt;
+              &lt;underStatus&gt;
+                 &lt;underStatusMelding kode="-200"&gt;Test feil&lt;/underStatusMelding&gt;
+              &lt;/underStatus&gt;
+           &lt;/responseHeader&gt;
+           &lt;melding tjeneste="hentRolleutskrift"/&gt;
+        &lt;/grunndata&gt;
+        """.trimIndent(),
+    )
+
 fun lagRollerSoapResponse(
     orgnummer: String = "971524553",
     headerHovedStatus: Int = 0,
