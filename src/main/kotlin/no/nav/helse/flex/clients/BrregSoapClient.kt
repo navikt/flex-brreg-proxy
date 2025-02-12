@@ -1,6 +1,10 @@
 package no.nav.helse.flex.clients
 
+import jakarta.xml.bind.JAXB
 import jakarta.xml.soap.SOAPException
+import jakarta.xml.ws.handler.MessageContext
+import jakarta.xml.ws.handler.soap.SOAPHandler
+import jakarta.xml.ws.handler.soap.SOAPMessageContext
 import no.brreg.saksys.grunndata.ws.ErFr
 import no.nav.helse.flex.config.logger
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean
@@ -8,11 +12,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.io.StringReader
-import javax.xml.bind.JAXB
 import javax.xml.namespace.QName
-import javax.xml.ws.handler.MessageContext
-import javax.xml.ws.handler.soap.SOAPHandler
-import javax.xml.ws.handler.soap.SOAPMessageContext
 import kotlin.jvm.java
 import generated.roller.Grunndata as RollerGrunndata
 import generated.rolleutskrift.Grunndata as RolleutskriftGrunndata
@@ -46,7 +46,7 @@ class BrregSoapClient(
             } catch (ex: Exception) {
                 val endMs = System.currentTimeMillis()
                 val melding = "Feil ved henting av roller (etter ${endMs - startMs} ms)"
-                logger.error(melding)
+                logger.error(melding, ex)
                 throw SoapServiceException(melding, ex)
             }
         val deserializedResponse =
@@ -92,8 +92,8 @@ class BrregSoapClient(
         val timeoutMS = REQUEST_TIMEOUT_MS
         factory.properties =
             mapOf(
-                "javax.xml.ws.client.connectionTimeout" to timeoutMS,
-                "javax.xml.ws.client.receiveTimeout" to timeoutMS,
+                "jakarta.xml.ws.client.connectionTimeout" to timeoutMS,
+                "jakarta.xml.ws.client.receiveTimeout" to timeoutMS,
             )
         return factory.create() as ErFr
     }

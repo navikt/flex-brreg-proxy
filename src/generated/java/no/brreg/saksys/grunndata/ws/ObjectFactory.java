@@ -1,7 +1,7 @@
 
 package no.brreg.saksys.grunndata.ws;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**

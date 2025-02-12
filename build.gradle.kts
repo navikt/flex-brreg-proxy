@@ -27,7 +27,7 @@ val logstashLogbackEncoderVersion = "8.0"
 val kluentVersion = "1.73"
 val commonsTextVersion = "1.13.0"
 val tokenSupportVersion = "5.0.16"
-val apacheCxfVersion = "3.4.10"
+val apacheCxfVersion = "4.1.0"
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
@@ -52,16 +52,16 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$apacheCxfVersion")
     implementation("org.apache.cxf:cxf-rt-transports-http:$apacheCxfVersion")
 
-    implementation("jakarta.xml.bind:jakarta.xml.bind-api:2.3.3")
-    implementation("org.glassfish.jaxb:jaxb-xjc:2.3.5")
-    implementation("com.sun.xml.bind:jaxb-impl:2.3.5")
-
+    implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
+    implementation("org.glassfish.jaxb:jaxb-xjc:4.0.5")
+    implementation("com.sun.xml.bind:jaxb-impl:4.0.5")
     // wsdl2java runtime-dependencies (copy-pasted fra https://github.com/nilsmagnus/wsdl2java/blob/master/src/main/groovy/no/nils/wsdl2java/Wsdl2JavaPlugin.groovy):
-    implementation("javax.xml.bind:jaxb-api:2.3.1")
-    implementation("javax.xml.ws:jaxws-api:2.3.1")
-    implementation("org.glassfish.jaxb:jaxb-runtime:2.3.5")
+    implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
+    implementation("jakarta.xml.ws:jakarta.xml.ws-api:4.0.2")
+
+    implementation("org.glassfish.jaxb:jaxb-runtime:4.0.5")
     implementation("org.glassfish.main.javaee-api:javax.jws:3.1.2.2")
-    implementation("com.sun.xml.messaging.saaj:saaj-impl:1.5.3")
+    implementation("com.sun.xml.messaging.saaj:saaj-impl:3.0.4")
 
     testImplementation("no.nav.security:token-validation-spring-test:$tokenSupportVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
