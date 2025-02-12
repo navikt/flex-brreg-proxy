@@ -75,6 +75,11 @@ configure<SourceSetContainer> {
     }
 }
 
+ktlint {
+    // Temporary: https://github.com/JLLeitschuh/ktlint-gradle/issues/809
+    version.set("1.4.1")
+}
+
 kotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_21)
