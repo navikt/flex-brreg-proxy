@@ -1,6 +1,7 @@
 package no.nav.helse.flex.clients
 
-import no.nav.helse.flex.FellesTestOppsett
+import no.nav.helse.flex.testoppsett.FellesTestOppsett
+import no.nav.helse.flex.testoppsett.RetryTestOppsett
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.reset
@@ -10,7 +11,9 @@ import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 
-class BrregServiceIsolertTest : FellesTestOppsett() {
+@FellesTestOppsett
+@RetryTestOppsett
+class BrregServiceTest {
     @MockitoBean
     lateinit var brregSoapClient: BrregSoapClient
 
