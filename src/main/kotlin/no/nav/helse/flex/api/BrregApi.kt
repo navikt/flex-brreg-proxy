@@ -1,10 +1,6 @@
 package no.nav.helse.flex.api
 
-import no.nav.helse.flex.clients.BrregServerException
-import no.nav.helse.flex.clients.BrregService
-import no.nav.helse.flex.clients.BrregStatus
-import no.nav.helse.flex.clients.Rolle
-import no.nav.helse.flex.clients.Rolletype
+import no.nav.helse.flex.clients.*
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.api.Unprotected
 import org.springframework.http.ResponseEntity
@@ -25,6 +21,8 @@ class BrregApi(
             try {
                 brregService.hentResponsStatus().erOk
             } catch (_: BrregServerException) {
+                false
+            } catch (_: BrregClientException) {
                 false
             }
         return ResponseEntity.ok(erStatusOk)

@@ -47,7 +47,6 @@ class BrregApiStubTest {
         brregStubServer.dispatcher = QueueDispatcher()
     }
 
-    @Disabled
     @Nested
     inner class BrregStatusOkEndepunkt {
         @Test
@@ -56,7 +55,7 @@ class BrregApiStubTest {
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/xml")
-                        .setBody(lagRollerSoapResponse(headerHovedStatus = 0))
+                        .setBody(lagBrregStubIsAliveResponse(true))
                 }
 
             val result =
@@ -89,12 +88,12 @@ class BrregApiStubTest {
         }
 
         @Test
-        fun `burde ha status ikke ok ved feil i soap api`() {
+        fun `burde ha status ikke ok ved feil i api`() {
             brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
-                        .setHeader("Content-Type", "application/xml")
-                        .setStatus(HttpStatus.UNAUTHORIZED.name)
+                        .setHeader("Content-Type", "application/json")
+                        .setResponseCode(HttpStatus.UNAUTHORIZED.value())
                 }
 
             val result =
@@ -112,8 +111,8 @@ class BrregApiStubTest {
             brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
-                        .setHeader("Content-Type", "application/xml")
-                        .setBody(lagRollerSoapResponse())
+                        .setHeader("Content-Type", "application/json")
+                        .setBody(brregStubResponse(fnr = "11111111111"))
                 }
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status-ok"))
@@ -121,7 +120,6 @@ class BrregApiStubTest {
         }
     }
 
-    @Disabled
     @Nested
     inner class BrregStatusEndepunkt {
         @Test
@@ -129,8 +127,8 @@ class BrregApiStubTest {
             brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
-                        .setHeader("Content-Type", "application/xml")
-                        .setBody(lagRollerSoapResponse(headerHovedStatus = 500))
+                        .setHeader("Content-Type", "application/json")
+                        .setBody(brregStubResponse(fnr = "11111111111"))
                 }
 
             val result =
@@ -149,8 +147,8 @@ class BrregApiStubTest {
             brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
-                        .setHeader("Content-Type", "application/xml")
-                        .setBody(lagRollerSoapResponse())
+                        .setHeader("Content-Type", "application/json")
+                        .setBody(brregStubResponse(fnr = "11111111111"))
                 }
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status"))
@@ -193,14 +191,13 @@ class BrregApiStubTest {
             }
         }
 
-        @Disabled
         @Test
         fun `burde kun returnere rolletyper som er spesifisert`() {
             brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
-                        .setHeader("Content-Type", "application/xml")
-                        .setBody(lagRolleutskriftSoapRespons())
+                        .setHeader("Content-Type", "application/json")
+                        .setBody(brregStubResponse(fnr = "11111111111"))
                 }
 
             val token = oauthServer.skapAzureJwt()
@@ -221,15 +218,11 @@ class BrregApiStubTest {
 
             val rollerDto: RollerDto = objectMapper.readValue(result)
             val roller = rollerDto.roller
-            roller.size `should be equal to` 3
+            roller.size `should be equal to` 1
             roller.forEach { it.orgnummer.shouldNotBeNullOrBlank() }
             roller.let {
                 it[0].rolletype.beskrivelse `should be equal to` Rolletype.INNH.beskrivelse
                 it[0].orgnavn `should be equal to` "SELSKAP AS"
-                it[1].rolletype.beskrivelse `should be equal to` Rolletype.DTPR.beskrivelse
-                it[1].orgnavn `should be equal to` "DIDGERIDOO AS"
-                it[2].rolletype.beskrivelse `should be equal to` Rolletype.DTSO.beskrivelse
-                it[2].orgnavn `should be equal to` "ILA AS"
             }
         }
 

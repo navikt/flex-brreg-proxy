@@ -27,35 +27,45 @@ class BrregStubClient(
         } ?: emptyList()
 
     override fun hentStatus(): BrregStatus {
-        TODO("Not yet implemented")
-    }
-
-    fun lagStatusMelding(response: ClientHttpResponse): BrregStatus =
-        BrregStatus(
-            melding = response.statusText,
-            erOk = response.statusCode.is2xxSuccessful,
+        val uri = restClient.get().uri { uriBuilder -> uriBuilder.path("/api/v2/isAlive").build() }
+        val res = uri.retrieve().mapStatusTilExceptions().toEntity<String>()
+        return BrregStatus(
+            melding = res.body ?: "",
+            erOk = res.statusCode.is2xxSuccessful && res.body == "OK",
         )
+    }
 
     fun hentRolleoversikt(fnr: String): BrregStubResponse? {
         val uri = restClient.get().uri { uriBuilder -> uriBuilder.path("/api/v2/rolleoversikt").build() }
         return uri
             .header("Nav-Personident", fnr)
             .retrieve()
-            .onStatus(HttpStatusCode::is4xxClientError) { _, response ->
-                throw BrregClientException(
-                    message = "Feil fra Brreg API ved henting av roller",
-                    httpStatus = response.statusCode.value(),
-                    httpMessage = response.statusText,
-                )
-            }.onStatus(HttpStatusCode::is5xxServerError) { _, response ->
-                throw BrregServerException(
-                    message = "Feil fra Brreg API ved henting av roller",
-                    brregStatus = lagStatusMelding(response),
-                )
-            }.toEntity<BrregStubResponse>()
+            .mapStatusTilExceptions()
+            .toEntity<BrregStubResponse>()
             .body
     }
 }
+
+internal fun RestClient.ResponseSpec.mapStatusTilExceptions(): RestClient.ResponseSpec =
+    this
+        .onStatus(HttpStatusCode::is4xxClientError) { _, response ->
+            throw BrregClientException(
+                message = "Feil fra Brreg API ved henting av roller",
+                httpStatus = response.statusCode.value(),
+                httpMessage = response.statusText,
+            )
+        }.onStatus(HttpStatusCode::is5xxServerError) { _, response ->
+            throw BrregServerException(
+                message = "Feil fra Brreg API ved henting av roller",
+                brregStatus = lagStatusMelding(response),
+            )
+        }
+
+internal fun lagStatusMelding(response: ClientHttpResponse): BrregStatus =
+    BrregStatus(
+        melding = response.statusText,
+        erOk = response.statusCode.is2xxSuccessful,
+    )
 
 data class BrregStubResponse(
     val fnr: String,
