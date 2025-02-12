@@ -5,8 +5,8 @@ plugins {
     id("org.springframework.boot") version "3.4.2"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
-    kotlin("jvm") version "2.0.21"
-    kotlin("plugin.spring") version "2.0.21"
+    kotlin("jvm") version "2.1.10"
+    kotlin("plugin.spring") version "2.1.10"
 }
 
 group = "no.nav.helse.flex"
@@ -27,7 +27,7 @@ val logstashLogbackEncoderVersion = "8.0"
 val kluentVersion = "1.73"
 val commonsTextVersion = "1.13.0"
 val tokenSupportVersion = "5.0.16"
-val apacheCxfVersion = "3.4.10"
+val apacheCxfVersion = "4.1.0"
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
@@ -37,7 +37,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-aop")
-    implementation("org.springframework.retry:spring-retry:1.3.4")
+    implementation("org.springframework.retry:spring-retry:2.0.11")
 
     implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
     // Påkrevd av token-validation-spring
@@ -51,17 +51,7 @@ dependencies {
 
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$apacheCxfVersion")
     implementation("org.apache.cxf:cxf-rt-transports-http:$apacheCxfVersion")
-
-    implementation("jakarta.xml.bind:jakarta.xml.bind-api:2.3.3")
-    implementation("org.glassfish.jaxb:jaxb-xjc:2.3.5")
-    implementation("com.sun.xml.bind:jaxb-impl:2.3.5")
-
-    // wsdl2java runtime-dependencies (copy-pasted fra https://github.com/nilsmagnus/wsdl2java/blob/master/src/main/groovy/no/nils/wsdl2java/Wsdl2JavaPlugin.groovy):
-    implementation("javax.xml.bind:jaxb-api:2.3.1")
-    implementation("javax.xml.ws:jaxws-api:2.3.1")
-    implementation("org.glassfish.jaxb:jaxb-runtime:2.3.5")
-    implementation("org.glassfish.main.javaee-api:javax.jws:3.1.2.2")
-    implementation("com.sun.xml.messaging.saaj:saaj-impl:1.5.3")
+    implementation("com.sun.xml.messaging.saaj:saaj-impl:3.0.4")
 
     testImplementation("no.nav.security:token-validation-spring-test:$tokenSupportVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -73,6 +63,11 @@ configure<SourceSetContainer> {
         java.srcDir("src/main/java")
         java.srcDir("src/generated/java")
     }
+}
+
+ktlint {
+    // Temporary: https://github.com/JLLeitschuh/ktlint-gradle/issues/809
+    version.set("1.4.1")
 }
 
 kotlin {
