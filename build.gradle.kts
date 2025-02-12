@@ -37,7 +37,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-aop")
-    implementation("org.springframework.retry:spring-retry:1.3.4")
+    implementation("org.springframework.retry:spring-retry:2.0.11")
 
     implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
     // Påkrevd av token-validation-spring
