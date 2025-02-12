@@ -8,6 +8,7 @@ import jakarta.xml.ws.handler.soap.SOAPMessageContext
 import no.brreg.saksys.grunndata.ws.ErFr
 import no.nav.helse.flex.config.logger
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean
+import org.apache.cxf.message.Message
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -92,8 +93,8 @@ class BrregSoapClient(
         val timeoutMS = REQUEST_TIMEOUT_MS
         factory.properties =
             mapOf(
-                "jakarta.xml.ws.client.connectionTimeout" to timeoutMS,
-                "jakarta.xml.ws.client.receiveTimeout" to timeoutMS,
+                Message.CONNECTION_TIMEOUT to timeoutMS,
+                Message.RECEIVE_TIMEOUT to timeoutMS,
             )
         return factory.create() as ErFr
     }
