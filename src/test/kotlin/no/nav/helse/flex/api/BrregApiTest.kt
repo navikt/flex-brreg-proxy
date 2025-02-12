@@ -119,7 +119,7 @@ class BrregApiTest {
     @Nested
     inner class BrregStatusEndepunkt {
         @Test
-        fun `burde ha status riktig status`() {
+        fun `burde ha riktig status`() {
             brregSoapServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()

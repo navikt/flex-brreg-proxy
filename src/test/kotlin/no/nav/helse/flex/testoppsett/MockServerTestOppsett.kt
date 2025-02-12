@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.TestPropertySource
 
-@TestPropertySource(properties = ["BRREG_TIMEOUT_MS=10"])
+@TestPropertySource(properties = ["BRREG_TIMEOUT_MS=50"])
 @Import(MockWebServereConfig::class)
 annotation class MockServerTestOppsett
 
