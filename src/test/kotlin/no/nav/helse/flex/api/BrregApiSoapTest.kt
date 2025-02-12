@@ -30,7 +30,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
 @TestPropertySource(
     properties = [
-        "NAIS_CLUSTER_NAME=prod-gcp",
+        "spring.profiles.active=prod",
     ],
 )
 class BrregApiSoapTest : FellesTestOppsett() {
@@ -140,7 +140,7 @@ class BrregApiSoapTest : FellesTestOppsett() {
                     .response.contentAsString
 
             val status: BrregStatus = objectMapper.readValue(result)
-            status.hovedStatus `should be equal to` 500
+            status.erOk `should be equal to` false
         }
 
         @Test
