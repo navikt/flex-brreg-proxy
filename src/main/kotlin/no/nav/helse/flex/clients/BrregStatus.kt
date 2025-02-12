@@ -14,6 +14,8 @@ data class BrregStatus(
         return "hovedStatus: $hovedStatus, underStatuser: $underStatusMelding"
     }
 
+    fun somAnonymisertTekst(): String = somTekst().anonymiserFnr()
+
     data class UnderStatus(
         val underStatus: Int,
         val melding: String,
@@ -43,5 +45,7 @@ data class BrregStatus(
                         )
                     },
             )
+
+        internal fun String.anonymiserFnr(): String = this.replace("\\d{11}".toRegex(), "X".repeat(11))
     }
 }
