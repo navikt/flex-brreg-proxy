@@ -1,6 +1,7 @@
 package no.nav.helse.flex.api
 
 import jakarta.servlet.http.HttpServletRequest
+import no.nav.helse.flex.clients.BrregClientException
 import no.nav.helse.flex.clients.BrregDeserializationException
 import no.nav.helse.flex.clients.BrregServerException
 import no.nav.helse.flex.config.logger
@@ -31,6 +32,12 @@ class GlobalExceptionHandler {
                 }
 
                 ResponseEntity(ApiError(ex.reason), ex.httpStatus)
+            }
+            is BrregClientException -> {
+                val httpStatus = HttpStatus.valueOf(ex.httpStatus)
+                val melding = ex.httpMessage ?: ""
+                skapResponseEntity(httpStatus)
+                ResponseEntity(ApiError("${httpStatus.reasonPhrase}. Pga feil fra Brreg: <$melding>"), httpStatus)
             }
             is BrregServerException -> {
                 val brregStatusTekst = ex.brregStatus?.melding ?: ""

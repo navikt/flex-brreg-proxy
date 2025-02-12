@@ -76,24 +76,14 @@ class BrregSoapClient(
         )
     }
 
-    override fun hentRoller(
-        fnr: String,
-        rolletyper: List<Rolletype>,
-    ): List<Rolle> =
-        hentRollerBrregSoap(
-            fnr,
-            rolleTyper = rolletyper,
-        )
+    override fun hentRoller(fnr: String): List<Rolle> = hentRollerBrregSoap(fnr)
 
     @Retryable(
         include = [BrregServerException::class],
         maxAttempts = 3,
         backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
     )
-    fun hentRollerBrregSoap(
-        fnr: String,
-        rolleTyper: List<Rolletype>? = null,
-    ): List<Rolle> {
+    fun hentRollerBrregSoap(fnr: String): List<Rolle> {
         val grunndata = hentRolleutskrift(fnr = fnr)
 
         val status = lagStatusMelding(grunndata.responseHeader)
@@ -113,7 +103,7 @@ class BrregSoapClient(
                     log.warn("Ukjent rolletype: ${it.rolleBeskrivelse.value}")
                 }
                 rolle
-            }.filter { it.rolletype in (rolleTyper ?: Rolletype.entries.toList()) }
+            }
     }
 
     fun hentRollerGrunndata(orgnummer: String): RollerGrunndata {

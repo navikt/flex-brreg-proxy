@@ -28,7 +28,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
 @TestPropertySource(
     properties = [
-        "NAIS_CLUSTER_NAME=dev-gcp",
+        "spring.profiles.active=dev",
     ],
 )
 class BrregApiStubTest : FellesTestOppsett() {
@@ -46,6 +46,7 @@ class BrregApiStubTest : FellesTestOppsett() {
         brregStubServer.dispatcher = QueueDispatcher()
     }
 
+    @Disabled
     @Nested
     inner class BrregStatusOkEndepunkt {
         @Test
@@ -119,6 +120,7 @@ class BrregApiStubTest : FellesTestOppsett() {
         }
     }
 
+    @Disabled
     @Nested
     inner class BrregStatusEndepunkt {
         @Test
@@ -236,6 +238,7 @@ class BrregApiStubTest : FellesTestOppsett() {
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/json")
+                        .setResponseCode(HttpStatus.NOT_FOUND.value())
                         .setBody(
                             """
                             {

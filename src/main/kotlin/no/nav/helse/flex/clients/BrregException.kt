@@ -11,6 +11,13 @@ open class BrregServerException(
     val brregStatus: BrregStatus? = null,
 ) : BrregException(message, cause)
 
+open class BrregClientException(
+    message: String,
+    cause: Throwable? = null,
+    val httpStatus: Int,
+    val httpMessage: String? = null,
+) : BrregException(message, cause)
+
 open class BrregDeserializationException(
     message: String,
     cause: Throwable? = null,

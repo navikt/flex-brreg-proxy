@@ -14,5 +14,12 @@ class BrregService(
     fun hentRoller(
         fnr: String,
         rolleTyper: List<Rolletype>? = null,
-    ): List<Rolle> = hentRoller(fnr, rolleTyper)
+    ): List<Rolle> {
+        val roller = brregClient.hentRoller(fnr)
+        return if (rolleTyper != null) {
+            roller.filter { it.rolletype in rolleTyper }
+        } else {
+            roller
+        }
+    }
 }

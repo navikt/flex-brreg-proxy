@@ -17,10 +17,7 @@ class BrregStubClient(
 ) : BrregClient {
     private val restClient = restClientBuilder.baseUrl(url).build()
 
-    override fun hentRoller(
-        fnr: String,
-        rolletyper: List<Rolletype>,
-    ): List<Rolle> =
+    override fun hentRoller(fnr: String): List<Rolle> =
         hentRolleoversikt(fnr)?.enheter?.map {
             Rolle(
                 rolletype = Rolletype.fromBeskrivelse(it.rollebeskrivelse),
@@ -45,6 +42,12 @@ class BrregStubClient(
             .header("Nav-Personident", fnr)
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError) { _, response ->
+                throw BrregClientException(
+                    message = "Feil fra Brreg API ved henting av roller",
+                    httpStatus = response.statusCode.value(),
+                    httpMessage = response.statusText,
+                )
+            }.onStatus(HttpStatusCode::is5xxServerError) { _, response ->
                 throw BrregServerException(
                     message = "Feil fra Brreg API ved henting av roller",
                     brregStatus = lagStatusMelding(response),
