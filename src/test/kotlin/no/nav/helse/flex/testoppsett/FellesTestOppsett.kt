@@ -13,5 +13,3 @@ import org.springframework.boot.test.context.SpringBootTest
 )
 @Target(AnnotationTarget.CLASS)
 annotation class FellesTestOppsett
-
-
