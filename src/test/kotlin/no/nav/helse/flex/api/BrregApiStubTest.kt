@@ -128,7 +128,7 @@ class BrregApiStubTest {
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/json")
-                        .setBody(brregStubResponse(fnr = "11111111111"))
+                        .setBody(lagBrregStubIsAliveResponse(true))
                 }
 
             val result =
@@ -139,7 +139,8 @@ class BrregApiStubTest {
                     .response.contentAsString
 
             val status: BrregStatus = objectMapper.readValue(result)
-            status.erOk `should be equal to` false
+            status.melding `should be equal to` "OK"
+            status.erOk `should be equal to` true
         }
 
         @Test

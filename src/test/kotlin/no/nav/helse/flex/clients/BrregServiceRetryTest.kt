@@ -1,8 +1,8 @@
 package no.nav.helse.flex.clients
 
-import org.junit.jupiter.api.Disabled
 import no.nav.helse.flex.testoppsett.FellesTestOppsett
 import no.nav.helse.flex.testoppsett.RetryTestOppsett
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.reset
@@ -20,7 +20,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
         "spring.profiles.active=prod",
     ],
 )
-class BrregServiceTest {
+class BrregServiceRetryTest {
     @MockitoBean
     lateinit var brregSoapClient: BrregSoapClient
 
