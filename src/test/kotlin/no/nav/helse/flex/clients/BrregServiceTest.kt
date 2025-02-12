@@ -9,13 +9,11 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.retry.annotation.EnableRetry
-import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 
 @FellesTestOppsett
 @RetryTestOppsett
-class BrregServiceIsolertTest {
+class BrregServiceTest {
     @MockitoBean
     lateinit var brregSoapClient: BrregSoapClient
 
