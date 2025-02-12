@@ -54,7 +54,7 @@ dependencies {
 
     implementation("jakarta.xml.bind:jakarta.xml.bind-api:2.3.3")
     implementation("org.glassfish.jaxb:jaxb-xjc:2.3.5")
-    implementation("com.sun.xml.bind:jaxb-impl:2.3.5")
+    implementation("com.sun.xml.bind:jaxb-impl:4.0.5")
 
     // wsdl2java runtime-dependencies (copy-pasted fra https://github.com/nilsmagnus/wsdl2java/blob/master/src/main/groovy/no/nils/wsdl2java/Wsdl2JavaPlugin.groovy):
     implementation("javax.xml.bind:jaxb-api:2.3.1")
