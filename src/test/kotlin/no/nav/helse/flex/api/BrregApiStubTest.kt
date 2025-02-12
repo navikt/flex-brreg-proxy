@@ -1,14 +1,12 @@
 package no.nav.helse.flex.api
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.clients.BrregStatus
 import no.nav.helse.flex.clients.Rolletype
 import no.nav.helse.flex.config.objectMapper
 import no.nav.helse.flex.config.serialisertTilString
-import no.nav.helse.flex.simpleDispatcher
-import no.nav.helse.flex.skapAzureJwt
 import no.nav.helse.flex.testdata.*
+import no.nav.helse.flex.testoppsett.*
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -26,12 +24,15 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
+@FellesTestOppsett
+@ApiTestOppsett
+@MockServerTestOppsett
 @TestPropertySource(
     properties = [
         "spring.profiles.active=dev",
     ],
 )
-class BrregApiStubTest : FellesTestOppsett() {
+class BrregApiStubTest {
     @Autowired
     lateinit var mockMvc: MockMvc
 

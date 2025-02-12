@@ -1,9 +1,14 @@
 package no.nav.helse.flex.clients
 
+import jakarta.xml.bind.JAXB
 import jakarta.xml.soap.SOAPException
+import jakarta.xml.ws.handler.MessageContext
+import jakarta.xml.ws.handler.soap.SOAPHandler
+import jakarta.xml.ws.handler.soap.SOAPMessageContext
 import no.brreg.saksys.grunndata.ws.ErFr
 import no.nav.helse.flex.config.logger
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean
+import org.apache.cxf.message.Message
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
@@ -11,11 +16,7 @@ import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import java.io.StringReader
-import javax.xml.bind.JAXB
 import javax.xml.namespace.QName
-import javax.xml.ws.handler.MessageContext
-import javax.xml.ws.handler.soap.SOAPHandler
-import javax.xml.ws.handler.soap.SOAPMessageContext
 import kotlin.jvm.java
 import generated.roller.Grunndata as RollerGrunndata
 import generated.rolleutskrift.Grunndata as RolleutskriftGrunndata
@@ -29,14 +30,14 @@ class BrregSoapClient(
     private val password: String,
     @Value("\${BRREG_URL}")
     private val brregUrl: String,
-    @Value("\${BRREG_TIMEOUT_MS:20000}")
-    private val requestTimeoutMs: Int,
 ) : BrregClient {
     private val log = logger()
 
     companion object {
         const val HENT_ROLLEUTSKRIFT_SERVICE_URL = "http://no/brreg/saksys/grunndata/ws/ErFr/hentRolleutskriftRequest"
         const val HENT_ROLLER_SERVICE_URL = "http://no/brreg/saksys/grunndata/ws/ErFr/hentRollerRequest"
+
+        private val REQUEST_TIMEOUT_MS = 20_000
     }
 
     private val hentRolleutskriftClient: ErFr = createSoapClientBean(HENT_ROLLEUTSKRIFT_SERVICE_URL)
@@ -157,11 +158,11 @@ class BrregSoapClient(
         factory.handlers.add(HeaderOutHandler(serviceUrl))
 
         // default er 30 sek (30000ms)
-        val timeoutMS = requestTimeoutMs
+        val timeoutMS = REQUEST_TIMEOUT_MS
         factory.properties =
             mapOf(
-                "javax.xml.ws.client.connectionTimeout" to timeoutMS,
-                "javax.xml.ws.client.receiveTimeout" to timeoutMS,
+                Message.CONNECTION_TIMEOUT to timeoutMS,
+                Message.RECEIVE_TIMEOUT to timeoutMS,
             )
         return factory.create() as ErFr
     }

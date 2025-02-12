@@ -1,17 +1,15 @@
 package no.nav.helse.flex.api
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.clients.BrregStatus
 import no.nav.helse.flex.clients.Rolletype
 import no.nav.helse.flex.config.objectMapper
 import no.nav.helse.flex.config.serialisertTilString
-import no.nav.helse.flex.simpleDispatcher
-import no.nav.helse.flex.skapAzureJwt
 import no.nav.helse.flex.testdata.lagRollerSoapResponse
 import no.nav.helse.flex.testdata.lagRolleutskriftErrorSoapRespons
 import no.nav.helse.flex.testdata.lagRolleutskriftSoapRespons
 import no.nav.helse.flex.testdata.wrapWithRolleutskriftXmlEnvelope
+import no.nav.helse.flex.testoppsett.*
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -28,12 +26,15 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
+@FellesTestOppsett
+@ApiTestOppsett
+@MockServerTestOppsett
 @TestPropertySource(
     properties = [
         "spring.profiles.active=prod",
     ],
 )
-class BrregApiSoapTest : FellesTestOppsett() {
+class BrregApiTest {
     @Autowired
     lateinit var mockMvc: MockMvc
 
@@ -124,7 +125,7 @@ class BrregApiSoapTest : FellesTestOppsett() {
     @Nested
     inner class BrregStatusEndepunkt {
         @Test
-        fun `burde ha status riktig status`() {
+        fun `burde ha riktig status`() {
             brregSoapServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
@@ -280,7 +281,7 @@ class BrregApiSoapTest : FellesTestOppsett() {
         }
 
         @Test
-        fun `burde håndtere feil i responseHeader fra soap respons og returnere BAD_GATEWAY`() {
+        fun `burde håndtere feil i responseHeader fra Brreg og returnere BAD_GATEWAY`() {
             brregSoapServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
@@ -300,7 +301,7 @@ class BrregApiSoapTest : FellesTestOppsett() {
                 ).andExpect(MockMvcResultMatchers.status().isBadGateway)
                 .andExpect(
                     MockMvcResultMatchers.jsonPath("reason").value(
-                        "Bad Gateway. Pga feil fra Brreg: <hovedStatus: -100, underStatuser: -200: Test feil>",
+                        "Bad Gateway. Pga feil fra Brreg: <hovedStatus: -100, underStatuser: -200: Test-feil>",
                     ),
                 )
         }
