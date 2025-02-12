@@ -1,17 +1,17 @@
 package no.nav.helse.flex.clients
 
-open class SoapClientException(
+open class BrregException(
     message: String,
     cause: Throwable? = null,
 ) : RuntimeException(message, cause)
 
-open class SoapServiceException(
+open class BrregServerException(
     message: String,
     cause: Throwable? = null,
     val brregStatus: BrregStatus? = null,
-) : SoapClientException(message, cause)
+) : BrregException(message, cause)
 
-open class SoapDeserializationException(
+open class BrregDeserializationException(
     message: String,
     cause: Throwable? = null,
-) : SoapClientException(message, cause)
+) : BrregException(message, cause)

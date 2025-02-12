@@ -19,7 +19,7 @@ class BrregServiceIsolertTest : FellesTestOppsett() {
 
     @Test
     fun `burde retrye på feil ved hentRoller`() {
-        `when`(brregSoapClient.hentRolleutskrift(anyString())).thenThrow(SoapServiceException("Test error"))
+        `when`(brregSoapClient.hentRolleutskrift(anyString())).thenThrow(BrregServerException("Test error"))
 
         runCatching {
             brregService.hentRoller("12345678901")

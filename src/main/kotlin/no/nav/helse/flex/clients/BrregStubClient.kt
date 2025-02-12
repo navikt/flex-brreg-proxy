@@ -1,39 +1,58 @@
 package no.nav.helse.flex.clients
 
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatusCode
+import org.springframework.http.client.ClientHttpResponse
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.toEntity
 
+@Profile("dev")
 @Component
 class BrregStubClient(
     @Value("\${BRREG_STUB_API_URL}")
     private val url: String,
     restClientBuilder: RestClient.Builder,
-) {
+) : BrregClient {
     private val restClient = restClientBuilder.baseUrl(url).build()
+
+    override fun hentRoller(
+        fnr: String,
+        rolletyper: List<Rolletype>,
+    ): List<Rolle> =
+        hentRolleoversikt(fnr)?.enheter?.map {
+            Rolle(
+                rolletype = Rolletype.fromBeskrivelse(it.rollebeskrivelse),
+                orgnummer = it.orgNr.toString(),
+                orgnavn = it.foretaksNavn.navn1,
+            )
+        } ?: emptyList()
+
+    override fun hentStatus(): BrregStatus {
+        TODO("Not yet implemented")
+    }
+
+    fun lagStatusMelding(response: ClientHttpResponse): BrregStatus =
+        BrregStatus(
+            melding = response.statusText,
+            erOk = response.statusCode.is2xxSuccessful,
+        )
 
     fun hentRolleoversikt(fnr: String): BrregStubResponse? {
         val uri = restClient.get().uri { uriBuilder -> uriBuilder.path("/api/v2/rolleoversikt").build() }
         return uri
             .header("Nav-Personident", fnr)
             .retrieve()
-            .onStatus(HttpStatusCode::is4xxClientError, { _, response ->
-                throw BrregStubClientException(
-                    message = "Feil ved kall til BrregStub: ${response.statusCode}",
-                    cause = RuntimeException(response.statusText),
+            .onStatus(HttpStatusCode::is4xxClientError) { _, response ->
+                throw BrregServerException(
+                    message = "Feil fra Brreg API ved henting av roller",
+                    brregStatus = lagStatusMelding(response),
                 )
-            })
-            .toEntity<BrregStubResponse>()
+            }.toEntity<BrregStubResponse>()
             .body
     }
 }
-
-open class BrregStubClientException(
-    message: String,
-    cause: Throwable? = null,
-) : RuntimeException(message)
 
 data class BrregStubResponse(
     val fnr: String,

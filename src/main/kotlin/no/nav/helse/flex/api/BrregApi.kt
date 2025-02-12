@@ -1,10 +1,10 @@
 package no.nav.helse.flex.api
 
+import no.nav.helse.flex.clients.BrregServerException
 import no.nav.helse.flex.clients.BrregService
 import no.nav.helse.flex.clients.BrregStatus
 import no.nav.helse.flex.clients.Rolle
 import no.nav.helse.flex.clients.Rolletype
-import no.nav.helse.flex.clients.SoapServiceException
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.api.Unprotected
 import org.springframework.http.ResponseEntity
@@ -23,8 +23,8 @@ class BrregApi(
     fun sjekkBrregStatusOk(): ResponseEntity<Boolean> {
         val erStatusOk =
             try {
-                brregService.hentResponsStatus().erOk()
-            } catch (_: SoapServiceException) {
+                brregService.hentResponsStatus().erOk
+            } catch (_: BrregServerException) {
                 false
             }
         return ResponseEntity.ok(erStatusOk)
