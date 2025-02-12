@@ -7,6 +7,10 @@ import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
+
+@Import(MockWebServereConfig::class)
+annotation class MockServerTest
 
 @TestConfiguration
 class MockWebServereConfig {

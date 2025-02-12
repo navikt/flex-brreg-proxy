@@ -1,13 +1,11 @@
 package no.nav.helse.flex.api
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.helse.flex.FellesTestOppsett
+import no.nav.helse.flex.*
 import no.nav.helse.flex.clients.BrregStatus
 import no.nav.helse.flex.clients.Rolletype
 import no.nav.helse.flex.config.objectMapper
 import no.nav.helse.flex.config.serialisertTilString
-import no.nav.helse.flex.simpleDispatcher
-import no.nav.helse.flex.skapAzureJwt
 import no.nav.helse.flex.testdata.lagRollerSoapResponse
 import no.nav.helse.flex.testdata.lagRolleutskriftErrorSoapRespons
 import no.nav.helse.flex.testdata.lagRolleutskriftSoapRespons
@@ -21,13 +19,17 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
-class BrregApiTest : FellesTestOppsett() {
+@FellesTestOppsett
+@ApiTest
+@MockServerTest
+class BrregApiTest {
     @Autowired
     lateinit var mockMvc: MockMvc
 
