@@ -4,8 +4,6 @@ replicas_min: 1
 replicas_max: 2
 cpu: 400m
 memory: 768Mi
-external-host:
-  - brreg-stub.intern.dev.nav.no
 env:
   SPRING_PROFILES_ACTIVE: default, dev
   BRREG_STUB_API_URL: https://brreg-stub.intern.dev.nav.no

@@ -39,6 +39,9 @@ spec:
       tenant: {{azureTenant}}
   accessPolicy:
     outbound:
+      rules:
+        - application: brreg-stub
+          namespace: dolly
       external:
     {{#each external-host}}
         - host: {{this}}
