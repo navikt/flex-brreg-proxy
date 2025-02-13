@@ -89,6 +89,7 @@ class BrregSoapClient(
 
         val status = lagStatusMelding(grunndata.responseHeader)
         if (!status.erOk || grunndata.melding == null) {
+            log.error("Feil fra Brreg API ved henting av roller. Status: ${status.anonymisertMelding()}")
             throw BrregServerException("Feil fra Brreg API ved henting av roller", brregStatus = status)
         }
 
