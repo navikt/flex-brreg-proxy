@@ -7,8 +7,9 @@ memory: 768Mi
 external-host:
   - pdl-api.dev-fss-pub.nais.io
   - grunndata.brreg.no
+  - brreg-stub.intern.dev.nav.no
 env:
-  SPRING_PROFILES_ACTIVE: default
+  SPRING_PROFILES_ACTIVE: default, dev
   PDL_BASE_URL: https://pdl-api.dev-fss-pub.nais.io
   PDL_API_AAD_CLIENT_ID: dev-fss.pdl.pdl-api
-  BRREG_URL: https://grunndata.brreg.no/grunndata/ErFr
+  BRREG_STUB_API_URL: https://brreg-stub.intern.dev.nav.no

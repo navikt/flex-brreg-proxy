@@ -8,7 +8,7 @@ external-host:
   - pdl-api.prod-fss-pub.nais.io
   - grunndata.brreg.no
 env:
-  SPRING_PROFILES_ACTIVE: default
+  SPRING_PROFILES_ACTIVE: default, prod
   PDL_BASE_URL: https://pdl-api.prod-fss-pub.nais.io
   PDL_API_AAD_CLIENT_ID: prod-fss.pdl.pdl-api
   BRREG_URL: https://grunndata.brreg.no/grunndata/ErFr
