@@ -17,6 +17,9 @@ class MockWebServereConfig {
     @Bean
     fun brregSoapServer() = brregSoapServer
 
+    @Bean
+    fun brregStubServer() = brregStubServer
+
     companion object {
         private val logger = logger()
 
@@ -28,6 +31,12 @@ class MockWebServereConfig {
             MockWebServer()
                 .also {
                     System.setProperty("BRREG_URL", "http://localhost:${it.port}/brreg/grunndata/v1")
+                }
+
+        val brregStubServer =
+            MockWebServer()
+                .also {
+                    System.setProperty("BRREG_STUB_API_URL", "http://localhost:${it.port}")
                 }
     }
 }

@@ -45,8 +45,6 @@ enum class Rolletype(
     UKJENT(listOf("Ukjent rolle")),
     ;
 
-    fun erSelvstendigNaringdrivende() = this == INNH || this == DTPR || this == DTSO || this == KOMP
-
     companion object {
         fun fromBeskrivelse(beskrivelse: String): Rolletype = entries.find { it.beskrivelse.contains(beskrivelse) } ?: UKJENT
     }

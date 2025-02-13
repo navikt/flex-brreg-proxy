@@ -12,6 +12,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 @FellesTestOppsett
 @TestPropertySource(properties = ["spring.profiles.active=default"])
 @ApiTestOppsett
+@TestPropertySource(
+    properties = [
+        "spring.profiles.active=prod",
+    ],
+)
 class ApplicationTest {
     @Autowired
     lateinit var mockMvc: MockMvc
