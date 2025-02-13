@@ -41,6 +41,7 @@ spec:
     outbound:
       rules:
         - application: brreg-stub
+          cluster: dev-fss
           namespace: dolly
       external:
     {{#each external-host}}
