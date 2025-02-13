@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.client.ClientHttpResponse
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.toEntity
@@ -17,6 +19,11 @@ class BrregStubClient(
 ) : BrregClient {
     private val restClient = restClientBuilder.baseUrl(url).build()
 
+    @Retryable(
+        include = [BrregServerException::class],
+        maxAttempts = 3,
+        backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
+    )
     override fun hentRoller(fnr: String): List<Rolle> =
         hentRolleoversikt(fnr)?.enheter?.map {
             Rolle(
@@ -26,6 +33,11 @@ class BrregStubClient(
             )
         } ?: emptyList()
 
+    @Retryable(
+        include = [BrregServerException::class],
+        maxAttempts = 3,
+        backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
+    )
     override fun hentStatus(): BrregStatus {
         val uri = restClient.get().uri { uriBuilder -> uriBuilder.path("/api/v2/isAlive").build() }
         val res = uri.retrieve().mapStatusTilExceptions().toEntity<String>()

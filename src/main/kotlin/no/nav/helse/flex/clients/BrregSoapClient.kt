@@ -43,6 +43,11 @@ class BrregSoapClient(
     private val hentRolleutskriftClient: ErFr = createSoapClientBean(HENT_ROLLEUTSKRIFT_SERVICE_URL)
     private val hentRollerClient: ErFr = createSoapClientBean(HENT_ROLLER_SERVICE_URL)
 
+    @Retryable(
+        include = [BrregServerException::class],
+        maxAttempts = 3,
+        backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
+    )
     override fun hentStatus(): BrregStatus = hentResponsStatus()
 
     @Retryable(
@@ -50,7 +55,9 @@ class BrregSoapClient(
         maxAttempts = 3,
         backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
     )
-    fun hentResponsStatus(): BrregStatus {
+    override fun hentRoller(fnr: String): List<Rolle> = hentRollerBrregSoap(fnr)
+
+    internal fun hentResponsStatus(): BrregStatus {
         val navOrgnummerForSjekk = "889640782"
         val respons = hentRollerGrunndata(orgnummer = navOrgnummerForSjekk)
         val status = lagStatusMelding(respons.responseHeader)
@@ -77,14 +84,7 @@ class BrregSoapClient(
         )
     }
 
-    override fun hentRoller(fnr: String): List<Rolle> = hentRollerBrregSoap(fnr)
-
-    @Retryable(
-        include = [BrregServerException::class],
-        maxAttempts = 3,
-        backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
-    )
-    fun hentRollerBrregSoap(fnr: String): List<Rolle> {
+    internal fun hentRollerBrregSoap(fnr: String): List<Rolle> {
         val grunndata = hentRolleutskrift(fnr = fnr)
 
         val status = lagStatusMelding(grunndata.responseHeader)
