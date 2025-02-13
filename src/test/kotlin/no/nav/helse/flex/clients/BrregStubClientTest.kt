@@ -20,7 +20,7 @@ import org.springframework.test.context.TestPropertySource
         "spring.profiles.active=dev",
     ],
 )
-class BrregApiStubTest {
+class BrregStubClientTest {
     @Autowired
     lateinit var brregStubServer: MockWebServer
 
