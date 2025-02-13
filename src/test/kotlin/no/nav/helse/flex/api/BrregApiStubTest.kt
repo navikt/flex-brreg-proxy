@@ -13,7 +13,6 @@ import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.QueueDispatcher
 import org.amshove.kluent.*
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -112,7 +111,7 @@ class BrregApiStubTest {
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/json")
-                        .setBody(brregStubResponse(fnr = "11111111111"))
+                        .setBody(lagBrregStubResponse(fnr = "11111111111"))
                 }
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status-ok"))
@@ -149,7 +148,7 @@ class BrregApiStubTest {
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/json")
-                        .setBody(brregStubResponse(fnr = "11111111111"))
+                        .setBody(lagBrregStubResponse(fnr = "11111111111"))
                 }
             mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status"))
@@ -165,7 +164,7 @@ class BrregApiStubTest {
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/json")
-                        .setBody(brregStubResponse(fnr = "11111111111"))
+                        .setBody(lagBrregStubResponse(fnr = "11111111111"))
                 }
 
             val token = oauthServer.skapAzureJwt()
@@ -198,7 +197,7 @@ class BrregApiStubTest {
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/json")
-                        .setBody(brregStubResponse(fnr = "11111111111"))
+                        .setBody(lagBrregStubResponse(fnr = "11111111111"))
                 }
 
             val token = oauthServer.skapAzureJwt()
@@ -259,14 +258,13 @@ class BrregApiStubTest {
                 ).andExpect(MockMvcResultMatchers.status().isNotFound)
         }
 
-        @Disabled
         @Test
-        fun `burde håndtere feil i deserialisering av soap respons og returnere INTERNAL_SERVER_ERROR`() {
+        fun `burde håndtere feil i deserialisering av respons og returnere INTERNAL_SERVER_ERROR`() {
             brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
-                        .setHeader("Content-Type", "application/xml")
-                        .setBody(wrapWithRolleutskriftXmlEnvelope("test"))
+                        .setHeader("Content-Type", "application/json")
+                        .setBody("{}")
                 }
 
             val token = oauthServer.skapAzureJwt()
@@ -281,14 +279,24 @@ class BrregApiStubTest {
                 ).andExpect(MockMvcResultMatchers.status().isInternalServerError)
         }
 
-        @Disabled
         @Test
-        fun `burde håndtere feil i responseHeader fra soap respons og returnere BAD_GATEWAY`() {
+        fun `burde håndtere feil i responseHeader fra respons og returnere BAD_GATEWAY`() {
             brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
-                        .setHeader("Content-Type", "application/xml")
-                        .setBody(lagRolleutskriftErrorSoapRespons(headerHovedStatus = -100))
+                        .setHeader("Content-Type", "application/json")
+                        .setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                        .setBody(
+                            """
+                            {
+                              "timestamp": "2025-02-11T15:37:51.213+00:00",
+                              "status": 500,
+                              "error": "Internal Server Error",
+                              "message": "Internal Server Error",
+                              "path": "/api/v2/rolleoversikt"
+                            }
+                            """.trimIndent(),
+                        )
                 }
 
             val token = oauthServer.skapAzureJwt()
@@ -303,7 +311,7 @@ class BrregApiStubTest {
                 ).andExpect(MockMvcResultMatchers.status().isBadGateway)
                 .andExpect(
                     MockMvcResultMatchers.jsonPath("reason").value(
-                        "Bad Gateway. Pga feil fra Brreg: <hovedStatus: -100, underStatuser: -200: Test feil>",
+                        "Bad Gateway. Pga feil fra Brreg: <Internal Server Error>",
                     ),
                 )
         }

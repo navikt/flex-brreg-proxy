@@ -95,7 +95,7 @@ class BrregStubClientTest {
                 simpleDispatcher {
                     MockResponse()
                         .setHeader("Content-Type", "application/json")
-                        .setBody(brregStubResponse(fnr = "11111111111"))
+                        .setBody(lagBrregStubResponse(fnr = "11111111111"))
                 }
 
             val roller = brregStubClient.hentRoller(fnr = "11111111111")
