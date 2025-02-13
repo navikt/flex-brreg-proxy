@@ -39,7 +39,7 @@ class BrregStubClient(
         backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
     )
     override fun hentStatus(): BrregStatus {
-        val uri = restClient.get().uri { uriBuilder -> uriBuilder.path("/api/v2/isAlive").build() }
+        val uri = restClient.get().uri { uriBuilder -> uriBuilder.path("/isAlive").build() }
         val res = uri.retrieve().mapStatusTilExceptions().toEntity<String>()
         return BrregStatus(
             melding = res.body ?: "",
