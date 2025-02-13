@@ -10,22 +10,26 @@ import org.springframework.context.annotation.Import
 class BrregClientFake : BrregClient {
     var roller: List<Rolle> = emptyList()
     var status: BrregStatus = BrregStatus("OK", true)
+    var hentRollerException: Exception? = null
+    var hentStatusException: Exception? = null
 
-    override fun hentRoller(fnr: String) = roller
+    override fun hentRoller(fnr: String) = hentRollerException?.let { throw it } ?: roller
 
-    override fun hentStatus() = status
+    override fun hentStatus() = hentStatusException?.let { throw it } ?: status
 
     fun clear() {
         roller = emptyList()
         status = BrregStatus("OK", true)
+        hentRollerException = null
+        hentStatusException = null
     }
 }
 
-@Import(FakesConfig::class)
-annotation class FakesTestOppsett
+@Import(BrregClientFakesConfig::class)
+annotation class BrregClientFakesOppsett
 
 @TestConfiguration
-class FakesConfig {
+class BrregClientFakesConfig {
     @Bean
     fun brregClient() = BrregClientFake()
 }
