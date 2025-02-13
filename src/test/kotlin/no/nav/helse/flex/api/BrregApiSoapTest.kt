@@ -34,7 +34,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
         "spring.profiles.active=prod",
     ],
 )
-class BrregApiTest {
+class BrregApiSoapTest {
     @Autowired
     lateinit var mockMvc: MockMvc
 
