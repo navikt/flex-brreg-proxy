@@ -8,18 +8,18 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 class BrregApi(
-    private val brregService: BrregService,
+    private val brregClient: BrregClient,
 ) {
     @GetMapping("/api/v1/brreg-status")
     @Unprotected
-    fun sjekkBrregStatus(): ResponseEntity<BrregStatus> = ResponseEntity.ok(brregService.hentResponsStatus())
+    fun sjekkBrregStatus(): ResponseEntity<BrregStatus> = ResponseEntity.ok(brregClient.hentStatus())
 
     @GetMapping("/api/v1/brreg-status-ok")
     @Unprotected
     fun sjekkBrregStatusOk(): ResponseEntity<Boolean> {
         val erStatusOk =
             try {
-                brregService.hentResponsStatus().erOk
+                brregClient.hentStatus().erOk
             } catch (_: BrregServerException) {
                 false
             } catch (_: BrregClientException) {
@@ -36,9 +36,15 @@ class BrregApi(
         val fnr = request.fnr
         val rolleTyper = request.rolleTyper
 
-        val result = brregService.hentRoller(fnr, rolleTyper)
+        val roller = brregClient.hentRoller(fnr)
+        val filtrerteRoller =
+            if (rolleTyper != null) {
+                roller.filter { it.rolletype in rolleTyper }
+            } else {
+                roller
+            }
 
-        return ResponseEntity.ok(RollerDto(result))
+        return ResponseEntity.ok(RollerDto(filtrerteRoller))
     }
 }
 
