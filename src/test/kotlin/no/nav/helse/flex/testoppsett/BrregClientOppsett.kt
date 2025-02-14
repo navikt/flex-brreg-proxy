@@ -22,6 +22,13 @@ import org.springframework.test.context.TestPropertySource
 )
 annotation class BrregStubClientOppsett
 
+@TestPropertySource(
+    properties = [
+        "spring.profiles.active=brreg-mock",
+    ],
+)
+annotation class BrregMockClientOppsett
+
 @MockServerTestOppsett
 @TestPropertySource(
     properties = [

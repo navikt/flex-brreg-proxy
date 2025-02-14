@@ -7,6 +7,6 @@ memory: 768Mi
 external-host:
   - testnav-brregstub-proxy.dev-fss-pub.nais.io
 env:
-  SPRING_PROFILES_ACTIVE: default, dev
+  SPRING_PROFILES_ACTIVE: default, brreg-mock
   BRREG_STUB_API_URL: https://testnav-brregstub-proxy.dev-fss-pub.nais.io
   BRREG_STUB_AAD_CLIENT_ID: dev-fss.dolly.testnav-brregstub-proxy

@@ -1,6 +1,6 @@
 package no.nav.helse.flex.clients
 
-class Rolle(
+data class Rolle(
     val rolletype: Rolletype,
     val orgnummer: String,
     val orgnavn: String,
