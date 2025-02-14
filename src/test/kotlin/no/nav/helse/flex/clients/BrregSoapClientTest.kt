@@ -14,15 +14,9 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
-import org.springframework.test.context.TestPropertySource
 
 @FellesTestOppsett
-@MockServerTestOppsett
-@TestPropertySource(
-    properties = [
-        "spring.profiles.active=prod",
-    ],
-)
+@BrregSoapClientOppsett
 class BrregSoapClientTest {
     @Autowired
     lateinit var brregSoapServer: MockWebServer

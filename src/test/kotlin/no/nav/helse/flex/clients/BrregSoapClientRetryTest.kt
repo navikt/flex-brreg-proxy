@@ -1,24 +1,15 @@
 package no.nav.helse.flex.clients
 
-import no.nav.helse.flex.testoppsett.FellesTestOppsett
-import no.nav.helse.flex.testoppsett.MockServerTestOppsett
-import no.nav.helse.flex.testoppsett.RetryTestOppsett
-import no.nav.helse.flex.testoppsett.simpleDispatcher
+import no.nav.helse.flex.testoppsett.*
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.context.TestPropertySource
 
 @FellesTestOppsett
 @RetryTestOppsett
-@MockServerTestOppsett
-@TestPropertySource(
-    properties = [
-        "spring.profiles.active=prod",
-    ],
-)
+@BrregSoapClientOppsett
 class BrregSoapClientRetryTest {
     @Autowired
     lateinit var brregSoapClient: BrregSoapClient

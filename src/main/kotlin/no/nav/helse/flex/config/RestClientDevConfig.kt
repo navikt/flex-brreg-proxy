@@ -1,4 +1,4 @@
-package no.nav.helse.flex.clients
+package no.nav.helse.flex.config
 
 import no.nav.security.token.support.client.core.ClientProperties
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
@@ -8,6 +8,7 @@ import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
@@ -19,6 +20,7 @@ import java.time.Duration
 const val API_CONNECT_TIMEOUT = 3L
 const val API_READ_TIMEOUT = 3L
 
+@Profile("dev")
 @Configuration
 class RestClientConfig {
     @Bean
