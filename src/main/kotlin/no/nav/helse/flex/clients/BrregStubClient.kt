@@ -1,6 +1,5 @@
 package no.nav.helse.flex.clients
 
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.client.ClientHttpResponse
@@ -13,11 +12,26 @@ import org.springframework.web.client.toEntity
 @Profile("dev")
 @Component
 class BrregStubClient(
-    @Value("\${BRREG_STUB_API_URL}")
-    private val url: String,
-    restClientBuilder: RestClient.Builder,
+    private val brregRestClient: RestClient,
 ) : BrregClient {
-    private val restClient = restClientBuilder.baseUrl(url).build()
+    @Retryable(
+        include = [BrregServerException::class],
+        maxAttempts = 3,
+        backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
+    )
+    override fun hentStatus(): BrregStatus {
+        val uri = brregRestClient.get().uri { uriBuilder -> uriBuilder.path("/isAlive").build() }
+        val res =
+            uri
+                .header("")
+                .retrieve()
+                .mapStatusTilExceptions()
+                .toEntity<String>()
+        return BrregStatus(
+            melding = res.body ?: "",
+            erOk = res.statusCode.is2xxSuccessful && res.body == "OK",
+        )
+    }
 
     @Retryable(
         include = [BrregServerException::class],
@@ -33,22 +47,8 @@ class BrregStubClient(
             )
         } ?: emptyList()
 
-    @Retryable(
-        include = [BrregServerException::class],
-        maxAttempts = 3,
-        backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
-    )
-    override fun hentStatus(): BrregStatus {
-        val uri = restClient.get().uri { uriBuilder -> uriBuilder.path("/isAlive").build() }
-        val res = uri.retrieve().mapStatusTilExceptions().toEntity<String>()
-        return BrregStatus(
-            melding = res.body ?: "",
-            erOk = res.statusCode.is2xxSuccessful && res.body == "OK",
-        )
-    }
-
     fun hentRolleoversikt(fnr: String): BrregStubResponse? {
-        val uri = restClient.get().uri { uriBuilder -> uriBuilder.path("/api/v2/rolleoversikt").build() }
+        val uri = brregRestClient.get().uri { uriBuilder -> uriBuilder.path("/api/v2/rolleoversikt").build() }
         return uri
             .header("Nav-Personident", fnr)
             .retrieve()

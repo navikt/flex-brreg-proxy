@@ -9,3 +9,4 @@ external-host:
 env:
   SPRING_PROFILES_ACTIVE: default, dev
   BRREG_STUB_API_URL: https://testnav-brregstub-proxy.dev-fss-pub.nais.io
+  BRREG_STUB_AAD_CLIENT_ID: dev-fss.dolly.testnav-brregstub-proxy

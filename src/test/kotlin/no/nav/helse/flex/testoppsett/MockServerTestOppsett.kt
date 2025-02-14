@@ -1,6 +1,7 @@
 package no.nav.helse.flex.testoppsett
 
 import no.nav.helse.flex.config.logger
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Import
 @Import(MockWebServereConfig::class)
 annotation class MockServerTestOppsett
 
+@EnableMockOAuth2Server
 @TestConfiguration
 class MockWebServereConfig {
     @Bean
