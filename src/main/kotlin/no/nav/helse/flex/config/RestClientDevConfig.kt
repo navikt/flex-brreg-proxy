@@ -3,6 +3,7 @@ package no.nav.helse.flex.config
 import no.nav.security.token.support.client.core.ClientProperties
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.spring.ClientConfigurationProperties
+import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager
 import org.springframework.beans.factory.annotation.Value
@@ -21,6 +22,7 @@ const val API_CONNECT_TIMEOUT = 3L
 const val API_READ_TIMEOUT = 3L
 
 @Profile("dev")
+@EnableOAuth2Client(cacheEnabled = true)
 @Configuration
 class RestClientConfig {
     @Bean
