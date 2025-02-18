@@ -55,7 +55,7 @@ class BrregSoapClient(
         maxAttempts = 3,
         backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
     )
-    override fun hentRoller(fnr: String): List<Rolle> = hentRollerBrregSoap(fnr)
+    override fun hentRoller(fnr: String): List<RolleDto> = hentRollerBrregSoap(fnr)
 
     internal fun hentResponsStatus(): BrregStatus {
         val navOrgnummerForSjekk = "889640782"
@@ -84,7 +84,7 @@ class BrregSoapClient(
         )
     }
 
-    internal fun hentRollerBrregSoap(fnr: String): List<Rolle> {
+    internal fun hentRollerBrregSoap(fnr: String): List<RolleDto> {
         val grunndata = hentRolleutskrift(fnr = fnr)
 
         val status = lagStatusMelding(grunndata.responseHeader)
@@ -95,16 +95,16 @@ class BrregSoapClient(
 
         return grunndata.melding.roller.enhet
             .map {
-                val rolle =
-                    Rolle(
+                val rolleDto =
+                    RolleDto(
                         rolletype = Rolletype.fromBeskrivelse(it.rolleBeskrivelse.value),
-                        orgnummer = it.orgnr.value.toString(),
-                        orgnavn = it.navn.navn1,
+                        organisasjonsnummer = it.orgnr.value.toString(),
+                        organisasjonsnavn = it.navn.navn1,
                     )
-                if (rolle.rolletype == Rolletype.UKJENT) {
+                if (rolleDto.rolletype == Rolletype.UKJENT) {
                     log.warn("Ukjent rolletype: ${it.rolleBeskrivelse.value}")
                 }
-                rolle
+                rolleDto
             }
     }
 

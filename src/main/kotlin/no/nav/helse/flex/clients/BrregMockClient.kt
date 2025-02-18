@@ -6,12 +6,12 @@ import org.springframework.stereotype.Component
 @Profile("brreg-mock")
 @Component
 class BrregMockClient : BrregClient {
-    override fun hentRoller(fnr: String): List<Rolle> =
+    override fun hentRoller(fnr: String): List<RolleDto> =
         listOf(
-            Rolle(
+            RolleDto(
                 Rolletype.INNH,
-                orgnummer = "123456789",
-                orgnavn = "Mitt Helt Eget Selskap",
+                organisasjonsnummer = "123456789",
+                organisasjonsnavn = "Mitt Helt Eget Selskap",
             ),
         )
 

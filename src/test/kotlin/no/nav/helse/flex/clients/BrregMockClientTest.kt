@@ -17,10 +17,10 @@ class BrregMockClientTest {
         val roller = brregMockClient.hentRoller("fnr")
         roller `should be equal to`
             listOf(
-                Rolle(
+                RolleDto(
                     Rolletype.INNH,
-                    orgnummer = "123456789",
-                    orgnavn = "Mitt Helt Eget Selskap",
+                    organisasjonsnummer = "123456789",
+                    organisasjonsnavn = "Mitt Helt Eget Selskap",
                 ),
             )
     }

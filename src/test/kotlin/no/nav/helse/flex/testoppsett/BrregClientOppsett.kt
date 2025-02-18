@@ -2,7 +2,7 @@ package no.nav.helse.flex.testoppsett
 
 import no.nav.helse.flex.clients.BrregClient
 import no.nav.helse.flex.clients.BrregStatus
-import no.nav.helse.flex.clients.Rolle
+import no.nav.helse.flex.clients.RolleDto
 import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
@@ -47,7 +47,7 @@ class BrregClientFakesConfig {
 }
 
 class BrregClientFake : BrregClient {
-    var roller: List<Rolle> = emptyList()
+    var roller: List<RolleDto> = emptyList()
     var status: BrregStatus = BrregStatus("OK", true)
     var hentRollerException: Exception? = null
     var hentStatusException: Exception? = null

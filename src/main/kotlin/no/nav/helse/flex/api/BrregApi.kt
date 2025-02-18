@@ -48,10 +48,6 @@ class BrregApi(
     }
 }
 
-data class RollerDto(
-    val roller: List<Rolle>,
-)
-
 data class HentRollerRequest(
     val fnr: String,
     val rolleTyper: List<Rolletype>? = null,

@@ -156,8 +156,8 @@ class BrregApiTest {
             roller.size `should be equal to` 1
             roller.first().let {
                 it.rolletype `should be equal to` Rolletype.INNH
-                it.orgnavn `should be equal to` "Mitt selskap Etternavn"
-                it.orgnummer `should be equal to` "123456789"
+                it.organisasjonsnavn `should be equal to` "Mitt selskap Etternavn"
+                it.organisasjonsnummer `should be equal to` "123456789"
             }
         }
 

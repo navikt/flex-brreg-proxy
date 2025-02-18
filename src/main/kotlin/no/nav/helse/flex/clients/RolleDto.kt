@@ -1,9 +1,13 @@
 package no.nav.helse.flex.clients
 
-data class Rolle(
+data class RollerDto(
+    val roller: List<RolleDto>,
+)
+
+data class RolleDto(
     val rolletype: Rolletype,
-    val orgnummer: String,
-    val orgnavn: String,
+    val organisasjonsnummer: String,
+    val organisasjonsnavn: String,
 )
 
 enum class Rolletype(

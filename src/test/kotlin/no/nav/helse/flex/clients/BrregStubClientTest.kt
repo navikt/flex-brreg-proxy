@@ -94,10 +94,10 @@ class BrregStubClientTest {
 
             val roller = brregStubClient.hentRoller(fnr = "11111111111")
             roller.size `should be equal to` 1
-            roller.forEach { it.orgnummer.shouldNotBeNullOrBlank() }
+            roller.forEach { it.organisasjonsnummer.shouldNotBeNullOrBlank() }
             roller.let {
                 it[0].rolletype.beskrivelse `should be equal to` Rolletype.INNH.beskrivelse
-                it[0].orgnavn `should be equal to` "SELSKAP AS"
+                it[0].organisasjonsnavn `should be equal to` "SELSKAP AS"
             }
         }
 

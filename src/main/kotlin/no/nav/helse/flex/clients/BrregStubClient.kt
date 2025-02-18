@@ -38,12 +38,12 @@ class BrregStubClient(
         maxAttempts = 3,
         backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
     )
-    override fun hentRoller(fnr: String): List<Rolle> =
+    override fun hentRoller(fnr: String): List<RolleDto> =
         hentRolleoversikt(fnr)?.enheter?.map {
-            Rolle(
+            RolleDto(
                 rolletype = Rolletype.fromBeskrivelse(it.rollebeskrivelse),
-                orgnummer = it.orgNr.toString(),
-                orgnavn = it.foretaksNavn.navn1,
+                organisasjonsnummer = it.orgNr.toString(),
+                organisasjonsnavn = it.foretaksNavn.navn1,
             )
         } ?: emptyList()
 

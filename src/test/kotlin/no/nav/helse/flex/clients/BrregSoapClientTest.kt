@@ -93,16 +93,16 @@ class BrregSoapClientTest {
             val roller = brregSoapClient.hentRoller("11111111111")
 
             roller.size `should be equal to` 4
-            roller.forEach { it.orgnummer.shouldNotBeNullOrBlank() }
+            roller.forEach { it.organisasjonsnummer.shouldNotBeNullOrBlank() }
             roller.let {
                 it[0].rolletype.beskrivelse `should be equal to` Rolletype.INNH.beskrivelse
-                it[0].orgnavn `should be equal to` "SELSKAP AS"
+                it[0].organisasjonsnavn `should be equal to` "SELSKAP AS"
                 it[1].rolletype.beskrivelse `should be equal to` Rolletype.DTPR.beskrivelse
-                it[1].orgnavn `should be equal to` "DIDGERIDOO AS"
+                it[1].organisasjonsnavn `should be equal to` "DIDGERIDOO AS"
                 it[2].rolletype.beskrivelse `should be equal to` Rolletype.DTSO.beskrivelse
-                it[2].orgnavn `should be equal to` "ILA AS"
+                it[2].organisasjonsnavn `should be equal to` "ILA AS"
                 it[3].rolletype.beskrivelse `should be equal to` Rolletype.MEDL.beskrivelse
-                it[3].orgnavn `should be equal to` "NAV Boretteslag"
+                it[3].organisasjonsnavn `should be equal to` "NAV Boretteslag"
             }
         }
 
