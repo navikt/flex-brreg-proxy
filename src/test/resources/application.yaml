@@ -15,8 +15,19 @@ no.nav.security.jwt:
     azureator:
       discoveryurl: http://localhost:${mock-oauth2-server.port}/azureator/.well-known/openid-configuration
       accepted_audience: flex-brreg-proxy-client-id
-
+  client:
+    registration:
+      brreg-stub-proxy-client-credentials:
+        token-endpoint-url: http://localhost:${mock-oauth2-server.port}/azureator/token
+        grant-type: client_credentials
+        scope: brreg-stub-proxy-client
+        authentication:
+          client-id: client-id
+          client-secret: secretzz
+          client-auth-method: client_secret_basic
 
 BRREG_USERNAME: username
 BRREG_PASSWORD: password
 BRREG_URL: url
+BRREG_STUB_AAD_CLIENT_ID: client-id
+BRREG_STUB_API_URL: url

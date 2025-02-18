@@ -1,8 +1,9 @@
 package no.nav.helse.flex.api
 
 import jakarta.servlet.http.HttpServletRequest
-import no.nav.helse.flex.clients.SoapDeserializationException
-import no.nav.helse.flex.clients.SoapServiceException
+import no.nav.helse.flex.clients.BrregClientException
+import no.nav.helse.flex.clients.BrregDeserializationException
+import no.nav.helse.flex.clients.BrregServerException
 import no.nav.helse.flex.config.logger
 import no.nav.security.token.support.core.exceptions.JwtTokenInvalidClaimException
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
@@ -32,12 +33,18 @@ class GlobalExceptionHandler {
 
                 ResponseEntity(ApiError(ex.reason), ex.httpStatus)
             }
-            is SoapServiceException -> {
-                val brregStatusTekst = ex.brregStatus?.somTekst() ?: ""
+            is BrregClientException -> {
+                val httpStatus = HttpStatus.valueOf(ex.httpStatus)
+                val melding = ex.httpMessage ?: ""
+                skapResponseEntity(httpStatus)
+                ResponseEntity(ApiError("${httpStatus.reasonPhrase}. Pga feil fra Brreg: <$melding>"), httpStatus)
+            }
+            is BrregServerException -> {
+                val brregStatusTekst = ex.brregStatus?.melding ?: ""
                 val httpStatus = HttpStatus.BAD_GATEWAY
                 ResponseEntity(ApiError("${httpStatus.reasonPhrase}. Pga feil fra Brreg: <$brregStatusTekst>"), httpStatus)
             }
-            is SoapDeserializationException -> skapResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+            is BrregDeserializationException -> skapResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
             is JwtTokenInvalidClaimException -> skapResponseEntity(HttpStatus.UNAUTHORIZED)
             is JwtTokenUnauthorizedException -> skapResponseEntity(HttpStatus.UNAUTHORIZED)
             is HttpMediaTypeNotAcceptableException -> skapResponseEntity(HttpStatus.NOT_ACCEPTABLE)

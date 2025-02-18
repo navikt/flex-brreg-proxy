@@ -1,9 +1,13 @@
 package no.nav.helse.flex.clients
 
-class Rolle(
+data class RollerDto(
+    val roller: List<RolleDto>,
+)
+
+data class RolleDto(
     val rolletype: Rolletype,
-    val orgnummer: String,
-    val orgnavn: String,
+    val organisasjonsnummer: String,
+    val organisasjonsnavn: String,
 )
 
 enum class Rolletype(
@@ -44,8 +48,6 @@ enum class Rolletype(
     VARA(listOf("Varamedlem")),
     UKJENT(listOf("Ukjent rolle")),
     ;
-
-    fun erSelvstendigNaringdrivende() = this == INNH || this == DTPR || this == DTSO || this == KOMP
 
     companion object {
         fun fromBeskrivelse(beskrivelse: String): Rolletype = entries.find { it.beskrivelse.contains(beskrivelse) } ?: UKJENT

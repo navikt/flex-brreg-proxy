@@ -5,10 +5,8 @@ replicas_max: 2
 cpu: 400m
 memory: 768Mi
 external-host:
-  - pdl-api.dev-fss-pub.nais.io
-  - grunndata.brreg.no
+  #- testnav-brregstub-proxy.dev-fss-pub.nais.io
 env:
-  SPRING_PROFILES_ACTIVE: default
-  PDL_BASE_URL: https://pdl-api.dev-fss-pub.nais.io
-  PDL_API_AAD_CLIENT_ID: dev-fss.pdl.pdl-api
-  BRREG_URL: https://grunndata.brreg.no/grunndata/ErFr
+  SPRING_PROFILES_ACTIVE: default, brreg-mock
+#  BRREG_STUB_API_URL: https://testnav-brregstub-proxy.dev-fss-pub.nais.io
+#  BRREG_STUB_AAD_CLIENT_ID: dev-fss.dolly.testnav-brregstub-proxy

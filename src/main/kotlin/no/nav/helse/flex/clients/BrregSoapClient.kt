@@ -11,6 +11,9 @@ import org.apache.cxf.jaxws.JaxWsProxyFactoryBean
 import org.apache.cxf.message.Message
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import java.io.StringReader
 import javax.xml.namespace.QName
@@ -18,6 +21,7 @@ import kotlin.jvm.java
 import generated.roller.Grunndata as RollerGrunndata
 import generated.rolleutskrift.Grunndata as RolleutskriftGrunndata
 
+@Profile("prod")
 @Component
 class BrregSoapClient(
     @Value("\${BRREG_USERNAME}")
@@ -26,8 +30,8 @@ class BrregSoapClient(
     private val password: String,
     @Value("\${BRREG_URL}")
     private val brregUrl: String,
-) {
-    private val logger = logger()
+) : BrregClient {
+    private val log = logger()
 
     companion object {
         const val HENT_ROLLEUTSKRIFT_SERVICE_URL = "http://no/brreg/saksys/grunndata/ws/ErFr/hentRolleutskriftRequest"
@@ -39,7 +43,72 @@ class BrregSoapClient(
     private val hentRolleutskriftClient: ErFr = createSoapClientBean(HENT_ROLLEUTSKRIFT_SERVICE_URL)
     private val hentRollerClient: ErFr = createSoapClientBean(HENT_ROLLER_SERVICE_URL)
 
-    fun hentRoller(orgnummer: String): RollerGrunndata {
+    @Retryable(
+        include = [BrregServerException::class],
+        maxAttempts = 3,
+        backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
+    )
+    override fun hentStatus(): BrregStatus = hentResponsStatus()
+
+    @Retryable(
+        include = [BrregServerException::class],
+        maxAttempts = 3,
+        backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
+    )
+    override fun hentRoller(fnr: String): List<RolleDto> = hentRollerBrregSoap(fnr)
+
+    internal fun hentResponsStatus(): BrregStatus {
+        val navOrgnummerForSjekk = "889640782"
+        val respons = hentRollerGrunndata(orgnummer = navOrgnummerForSjekk)
+        val status = lagStatusMelding(respons.responseHeader)
+        return status
+    }
+
+    fun lagStatusMelding(responseHeader: RolleutskriftGrunndata.ResponseHeader): BrregStatus {
+        val hovedStatus = responseHeader.hovedStatus
+        val underStatuser = responseHeader.underStatus.underStatusMelding
+        val underStatusMelding = underStatuser.joinToString(", ") { "${it.kode}: ${it.value}" }
+        return BrregStatus(
+            melding = "hovedStatus: $hovedStatus, underStatuser: $underStatusMelding",
+            erOk = hovedStatus == 0,
+        )
+    }
+
+    fun lagStatusMelding(responseHeader: RollerGrunndata.ResponseHeader): BrregStatus {
+        val hovedStatus = responseHeader.hovedStatus
+        val underStatuser = responseHeader.underStatus.underStatusMelding
+        val underStatusMelding = underStatuser.joinToString(", ") { "${it.kode}: ${it.value}" }
+        return BrregStatus(
+            melding = "hovedStatus: $hovedStatus, underStatuser: $underStatusMelding",
+            erOk = hovedStatus == 0,
+        )
+    }
+
+    internal fun hentRollerBrregSoap(fnr: String): List<RolleDto> {
+        val grunndata = hentRolleutskrift(fnr = fnr)
+
+        val status = lagStatusMelding(grunndata.responseHeader)
+        if (!status.erOk || grunndata.melding == null) {
+            log.error("Feil fra Brreg API ved henting av roller. Status: ${status.anonymisertMelding()}")
+            throw BrregServerException("Feil fra Brreg API ved henting av roller", brregStatus = status)
+        }
+
+        return grunndata.melding.roller.enhet
+            .map {
+                val rolleDto =
+                    RolleDto(
+                        rolletype = Rolletype.fromBeskrivelse(it.rolleBeskrivelse.value),
+                        organisasjonsnummer = it.orgnr.value.toString(),
+                        organisasjonsnavn = it.navn.navn1,
+                    )
+                if (rolleDto.rolletype == Rolletype.UKJENT) {
+                    log.warn("Ukjent rolletype: ${it.rolleBeskrivelse.value}")
+                }
+                rolleDto
+            }
+    }
+
+    fun hentRollerGrunndata(orgnummer: String): RollerGrunndata {
         val startMs = System.currentTimeMillis()
         val response =
             try {
@@ -47,16 +116,16 @@ class BrregSoapClient(
             } catch (ex: Exception) {
                 val endMs = System.currentTimeMillis()
                 val melding = "Feil ved henting av roller (etter ${endMs - startMs} ms)"
-                logger.error(melding, ex)
-                throw SoapServiceException(melding, ex)
+                log.error(melding)
+                throw BrregServerException(melding, ex)
             }
         val deserializedResponse =
             try {
                 JAXB.unmarshal(StringReader(response), RollerGrunndata::class.java)
             } catch (ex: Exception) {
                 val melding = "Feil ved deserialisering av roller respons"
-                logger.error(melding)
-                throw SoapDeserializationException(melding, ex)
+                log.error(melding)
+                throw BrregDeserializationException(melding, ex)
             }
         return deserializedResponse
     }
@@ -69,16 +138,16 @@ class BrregSoapClient(
             } catch (ex: Exception) {
                 val endMs = System.currentTimeMillis()
                 val melding = "Feil ved henting av rolleutskrift (etter ${endMs - startMs} ms)"
-                logger.error(melding)
-                throw SoapServiceException(melding, ex)
+                log.error(melding)
+                throw BrregServerException(melding, ex)
             }
         val deserializedResponse =
             try {
                 JAXB.unmarshal(StringReader(response), RolleutskriftGrunndata::class.java)
             } catch (ex: Exception) {
                 val melding = "Feil ved deserialisering av respons"
-                logger.error(melding)
-                throw SoapDeserializationException(melding, ex)
+                log.error(melding)
+                throw BrregDeserializationException(melding, ex)
             }
         return deserializedResponse
     }

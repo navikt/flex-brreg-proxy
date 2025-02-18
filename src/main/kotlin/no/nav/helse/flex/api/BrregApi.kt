@@ -1,10 +1,6 @@
 package no.nav.helse.flex.api
 
-import no.nav.helse.flex.clients.BrregService
-import no.nav.helse.flex.clients.BrregStatus
-import no.nav.helse.flex.clients.Rolle
-import no.nav.helse.flex.clients.Rolletype
-import no.nav.helse.flex.clients.SoapServiceException
+import no.nav.helse.flex.clients.*
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.api.Unprotected
 import org.springframework.http.ResponseEntity
@@ -12,19 +8,21 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 class BrregApi(
-    private val brregService: BrregService,
+    private val brregClient: BrregClient,
 ) {
     @GetMapping("/api/v1/brreg-status")
     @Unprotected
-    fun sjekkBrregStatus(): ResponseEntity<BrregStatus> = ResponseEntity.ok(brregService.hentResponsStatus())
+    fun sjekkBrregStatus(): ResponseEntity<BrregStatus> = ResponseEntity.ok(brregClient.hentStatus())
 
     @GetMapping("/api/v1/brreg-status-ok")
     @Unprotected
     fun sjekkBrregStatusOk(): ResponseEntity<Boolean> {
         val erStatusOk =
             try {
-                brregService.hentResponsStatus().erOk()
-            } catch (_: SoapServiceException) {
+                brregClient.hentStatus().erOk
+            } catch (_: BrregServerException) {
+                false
+            } catch (_: BrregClientException) {
                 false
             }
         return ResponseEntity.ok(erStatusOk)
@@ -38,15 +36,17 @@ class BrregApi(
         val fnr = request.fnr
         val rolleTyper = request.rolleTyper
 
-        val result = brregService.hentRoller(fnr, rolleTyper)
+        val roller = brregClient.hentRoller(fnr)
+        val filtrerteRoller =
+            if (rolleTyper != null) {
+                roller.filter { it.rolletype in rolleTyper }
+            } else {
+                roller
+            }
 
-        return ResponseEntity.ok(RollerDto(result))
+        return ResponseEntity.ok(RollerDto(filtrerteRoller))
     }
 }
-
-data class RollerDto(
-    val roller: List<Rolle>,
-)
 
 data class HentRollerRequest(
     val fnr: String,

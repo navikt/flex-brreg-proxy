@@ -44,6 +44,7 @@ dependencies {
     implementation("org.hibernate.validator:hibernate-validator")
     implementation("no.nav.security:token-client-spring:$tokenSupportVersion")
 
+    implementation("org.apache.httpcomponents.client5:httpclient5")
     implementation("org.apache.commons:commons-text:$commonsTextVersion")
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
