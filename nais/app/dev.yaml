@@ -6,6 +6,8 @@ cpu: 400m
 memory: 768Mi
 external-host:
   - testnav-brregstub-proxy.dev-fss-pub.nais.io
+  # fjerne denne før deploy til prod
+  - brreg-stub.intern.dev.nav.no
 env:
   SPRING_PROFILES_ACTIVE: default, dev
   BRREG_STUB_API_URL: https://testnav-brregstub-proxy.dev-fss-pub.nais.io
