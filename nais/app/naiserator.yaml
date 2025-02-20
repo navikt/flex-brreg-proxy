@@ -1,3 +1,17 @@
+---
+apiVersion: "nais.io/v1"
+kind: "AzureAdApplication"
+metadata:
+  name: flex-brreg-proxy-nav-tenant-proxy
+  namespace: flex
+  labels:
+    team: flex
+spec:
+  secretName: azure-flex-brreg-proxy-nav-tenant-proxy
+  secretKeyPrefix: NAV_TENANT_PROXY
+  tenant: nav.no
+---
+
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
@@ -56,6 +70,7 @@ spec:
         - id: elastic
   envFrom:
     - secret: brreg-auth
+    - secret: azure-flex-brreg-proxy-nav-tenant-proxy
   env:
   {{#each env}}
      - name: {{@key}}
