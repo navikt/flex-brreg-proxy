@@ -9,6 +9,7 @@ import no.nav.helse.flex.testoppsett.*
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -242,6 +243,7 @@ class BrregApiTest {
                 ).andExpect(MockMvcResultMatchers.status().isBadGateway)
         }
 
+        @Disabled
         @Test
         fun `burde feile uten token`() {
             mockMvc

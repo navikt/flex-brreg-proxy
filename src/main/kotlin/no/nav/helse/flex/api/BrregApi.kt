@@ -1,7 +1,6 @@
 package no.nav.helse.flex.api
 
 import no.nav.helse.flex.clients.*
-import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.api.Unprotected
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -29,7 +28,8 @@ class BrregApi(
     }
 
     @PostMapping("/api/v1/roller")
-    @ProtectedWithClaims(issuer = "azureator")
+    // @ProtectedWithClaims(issuer = "azureator")
+    @Unprotected
     fun hentRoller(
         @RequestBody request: HentRollerRequest,
     ): ResponseEntity<RollerDto> {
