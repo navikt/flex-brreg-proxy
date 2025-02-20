@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 class Application
 
 fun main(args: Array<String>) {
+    println("Environment variables: ${System.getenv()}")
     runApplication<Application>(*args)
 }
 
