@@ -8,7 +8,7 @@ metadata:
     team: flex
 spec:
   secretName: azure-flex-brreg-proxy-nav-tenant-proxy
-  secretKeyPrefix: NAV_TENANT_PROXY
+  secretKeyPrefix: AZURE_NAV
   tenant: nav.no
 ---
 apiVersion: "nais.io/v1alpha1"
