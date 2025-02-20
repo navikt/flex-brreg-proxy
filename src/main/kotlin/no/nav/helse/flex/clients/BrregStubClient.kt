@@ -43,7 +43,7 @@ class BrregStubClient(
             RolleDto(
                 rolletype = Rolletype.fromBeskrivelse(it.rollebeskrivelse),
                 organisasjonsnummer = it.orgNr.toString(),
-                organisasjonsnavn = it.foretaksNavn.navn1,
+                organisasjonsnavn = it.foretaksNavn.fulltNavn(),
             )
         } ?: emptyList()
 
@@ -91,9 +91,11 @@ data class BrregStubResponse(
 
 data class Navn(
     val navn1: String,
-    val navn2: String,
-    val navn3: String,
-)
+    val navn2: String? = null,
+    val navn3: String? = null,
+) {
+    fun fulltNavn(): String = listOfNotNull(navn1, navn2, navn3).filter { it.isNotBlank() }.joinToString(" ")
+}
 
 data class Adresse(
     val adresse1: String,
