@@ -41,9 +41,9 @@ class BrregStubClient(
     override fun hentRoller(fnr: String): List<RolleDto> =
         hentRolleoversikt(fnr)?.enheter?.map {
             RolleDto(
-                rolletype = Rolletype.fromBeskrivelse(it.rollebeskrivelse),
+                rolletype = Rolletype.valueOf(it.rolle),
                 organisasjonsnummer = it.orgNr.toString(),
-                organisasjonsnavn = it.foretaksNavn.fulltNavn(),
+                organisasjonsnavn = it.foretaksNavn?.fulltNavn() ?: "",
             )
         } ?: emptyList()
 
@@ -81,12 +81,12 @@ internal fun lagStatusMelding(response: ClientHttpResponse): BrregStatus =
 
 data class BrregStubResponse(
     val fnr: String,
-    val fodselsdato: String,
+    val fodselsdato: String? = null,
     val navn: Navn,
     val adresse: Adresse,
     val enheter: List<Enhet>,
-    val hovedstatus: Int,
-    val understatuser: List<Int>,
+    val hovedstatus: Int? = null,
+    val understatuser: List<Int>? = null,
 )
 
 data class Navn(
@@ -99,23 +99,25 @@ data class Navn(
 
 data class Adresse(
     val adresse1: String,
-    val adresse2: String,
-    val adresse3: String,
-    val postnr: String,
-    val poststed: String,
+    val adresse2: String? = null,
+    val adresse3: String? = null,
+    val postnr: String? = null,
+    val poststed: String? = null,
     val landKode: String,
-    val kommunenr: String,
-)
+    val kommunenr: String? = null,
+) {
+    fun fullAdresse(): String = listOfNotNull(adresse1, adresse2, adresse3).filter { it.isNotBlank() }.joinToString(" ")
+}
 
 data class Enhet(
     val registreringsdato: String,
     val rolle: String,
-    val rollebeskrivelse: String,
+    val rollebeskrivelse: String? = null,
     val orgNr: Int,
-    val foretaksNavn: Navn,
-    val forretningsAdresse: Adresse,
-    val postAdresse: Adresse,
-    val personRolle: List<PersonRolle>,
+    val foretaksNavn: Navn? = null,
+    val forretningsAdresse: Adresse? = null,
+    val postAdresse: Adresse? = null,
+    val personRolle: List<PersonRolle>? = null,
 )
 
 data class PersonRolle(
