@@ -96,7 +96,7 @@ class BrregSoapClient(
             httpStatus =
                 if (erOK) {
                     HttpStatus.OK
-                } else if (underStatuser.any { it.kode == 180 }) {
+                } else if (underStatuser.any { it.kode == BRREG_IKKE_FUNNET }) {
                     HttpStatus.NOT_FOUND
                 } else {
                     HttpStatus.BAD_REQUEST
@@ -112,7 +112,7 @@ class BrregSoapClient(
             log.error("Feil fra Brreg API ved henting av roller. Status: ${status.anonymisertMelding()}")
             throw BrregClientException(
                 message = "Feil fra Brreg API ved henting av roller",
-                httpStatus = HttpStatus.BAD_REQUEST.value(),
+                httpStatus = status.httpStatus.value(),
                 httpMessage = status.anonymisertMelding(),
             )
         }

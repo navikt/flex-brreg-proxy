@@ -1,6 +1,7 @@
 package no.nav.helse.flex.clients
 
 import org.springframework.context.annotation.Profile
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 
 @Profile("brreg-mock")
@@ -15,5 +16,5 @@ class BrregMockClient : BrregClient {
             ),
         )
 
-    override fun hentStatus(): BrregStatus = BrregStatus("OK", true)
+    override fun hentStatus(): BrregStatus = BrregStatus("OK", true, HttpStatus.OK)
 }
