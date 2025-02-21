@@ -5,6 +5,7 @@ import no.nav.helse.flex.clients.BrregClientException
 import no.nav.helse.flex.clients.BrregDeserializationException
 import no.nav.helse.flex.clients.BrregServerException
 import no.nav.helse.flex.config.logger
+import no.nav.security.token.support.client.core.OAuth2ClientException
 import no.nav.security.token.support.core.exceptions.JwtTokenInvalidClaimException
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
 import org.springframework.http.HttpStatus
@@ -23,6 +24,14 @@ class GlobalExceptionHandler {
         request: HttpServletRequest,
     ): ResponseEntity<Any> =
         when (ex) {
+            // TODO: Remove
+            is OAuth2ClientException -> {
+                log.error(
+                    "OAuth2ClientException. Message: ${ex.message}, method: ${request.method}, localizedMessage: ${ex.localizedMessage}, uri: ${request.requestURI}",
+                    ex,
+                )
+                skapResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+            }
             is AbstractApiError -> {
                 when (ex.loglevel) {
                     LogLevel.WARN -> log.warn(ex.message, ex)
