@@ -25,6 +25,8 @@ const val API_READ_TIMEOUT = 3L
 @EnableOAuth2Client(cacheEnabled = true)
 @Configuration
 class RestClientConfig {
+    private val log = logger()
+
     @Bean
     fun brregRestClient(
         @Value("\${BRREG_STUB_API_URL}")
@@ -64,6 +66,8 @@ class RestClientConfig {
         val clientProperties =
             clientConfigurationProperties.registration[registrationName]
                 ?: throw RuntimeException("Fant ikke config for $registrationName.")
+
+        log.info("Client properties: ${clientProperties.serialisertTilString()}")
 
         return RestClient
             .builder()
