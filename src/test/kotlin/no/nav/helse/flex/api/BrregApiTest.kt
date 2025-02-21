@@ -49,21 +49,20 @@ class BrregApiTest {
                     .andReturn()
                     .response.contentAsString
 
-            result `should be equal to` "true"
+            result `should be equal to` "OK"
         }
 
         @Test
         fun `burde ha status ikke ok`() {
-            // TODO ikke returner ok?
-            brregClient.status = BrregStatus("", false, HttpStatus.OK)
+            brregClient.status = BrregStatus("", false, HttpStatus.BAD_GATEWAY)
             val result =
                 mockMvc
                     .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status-ok"))
-                    .andExpect(MockMvcResultMatchers.status().isOk)
+                    .andExpect(MockMvcResultMatchers.status().isBadGateway)
                     .andReturn()
                     .response.contentAsString
 
-            result `should be equal to` "false"
+            result `should be equal to` """{"reason":"Bad Gateway. Pga feil fra Brreg: <>"}"""
         }
 
         @Test
@@ -73,11 +72,11 @@ class BrregApiTest {
             val result =
                 mockMvc
                     .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status-ok"))
-                    .andExpect(MockMvcResultMatchers.status().isOk)
+                    .andExpect(MockMvcResultMatchers.status().isBadGateway)
                     .andReturn()
                     .response.contentAsString
 
-            result `should be equal to` "false"
+            result `should be equal to` """{"reason":"Bad Gateway. Pga feil fra Brreg: <>"}"""
         }
 
         @Test
@@ -87,11 +86,11 @@ class BrregApiTest {
             val result =
                 mockMvc
                     .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status-ok"))
-                    .andExpect(MockMvcResultMatchers.status().isOk)
+                    .andExpect(MockMvcResultMatchers.status().isUnauthorized)
                     .andReturn()
                     .response.contentAsString
 
-            result `should be equal to` "false"
+            result `should be equal to` """{"reason":"Unauthorized. Pga feil fra Brreg: <>"}"""
         }
 
         @Test
