@@ -39,6 +39,7 @@ class BrregSoapClient(
         const val HENT_ROLLER_SERVICE_URL = "http://no/brreg/saksys/grunndata/ws/ErFr/hentRollerRequest"
 
         private val REQUEST_TIMEOUT_MS = 20_000
+        private val BRREG_IKKE_FUNNET = 180
     }
 
     private val hentRolleutskriftClient: ErFr = createSoapClientBean(HENT_ROLLEUTSKRIFT_SERVICE_URL)
@@ -67,21 +68,39 @@ class BrregSoapClient(
 
     fun lagStatusMelding(responseHeader: RolleutskriftGrunndata.ResponseHeader): BrregStatus {
         val hovedStatus = responseHeader.hovedStatus
+        val erOK = hovedStatus == 0
         val underStatuser = responseHeader.underStatus.underStatusMelding
         val underStatusMelding = underStatuser.joinToString(", ") { "${it.kode}: ${it.value}" }
         return BrregStatus(
             melding = "hovedStatus: $hovedStatus, underStatuser: $underStatusMelding",
-            erOk = hovedStatus == 0,
+            erOk = erOK,
+            httpStatus =
+                if (erOK) {
+                    HttpStatus.OK
+                } else if (underStatuser.any { it.kode == BRREG_IKKE_FUNNET }) {
+                    HttpStatus.NOT_FOUND
+                } else {
+                    HttpStatus.BAD_REQUEST
+                },
         )
     }
 
     fun lagStatusMelding(responseHeader: RollerGrunndata.ResponseHeader): BrregStatus {
         val hovedStatus = responseHeader.hovedStatus
+        val erOK = hovedStatus == 0
         val underStatuser = responseHeader.underStatus.underStatusMelding
         val underStatusMelding = underStatuser.joinToString(", ") { "${it.kode}: ${it.value}" }
         return BrregStatus(
             melding = "hovedStatus: $hovedStatus, underStatuser: $underStatusMelding",
-            erOk = hovedStatus == 0,
+            erOk = erOK,
+            httpStatus =
+                if (erOK) {
+                    HttpStatus.OK
+                } else if (underStatuser.any { it.kode == 180 }) {
+                    HttpStatus.NOT_FOUND
+                } else {
+                    HttpStatus.BAD_REQUEST
+                },
         )
     }
 
