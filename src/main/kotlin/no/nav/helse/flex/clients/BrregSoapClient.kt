@@ -94,6 +94,7 @@ class BrregSoapClient(
             throw BrregClientException(
                 message = "Feil fra Brreg API ved henting av roller",
                 httpStatus = HttpStatus.BAD_REQUEST.value(),
+                httpMessage = status.anonymisertMelding(),
             )
         }
 
