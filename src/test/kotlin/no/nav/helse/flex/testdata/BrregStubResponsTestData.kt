@@ -9,8 +9,7 @@ fun lagBrregStubResponse(fnr: String = "11111111111") =
         "fodselsdato": "1990-01-01",
         "navn": {
             "navn1": "Ola",
-            "navn2": "Normann",
-            "navn3": ""
+            "navn2": "Normann"
         },
         "adresse": {
             "adresse1": "Gate 1",
@@ -29,8 +28,7 @@ fun lagBrregStubResponse(fnr: String = "11111111111") =
                 "orgNr": 123456789,
                 "foretaksNavn": {
                     "navn1": "SELSKAP AS",
-                    "navn2": "",
-                    "navn3": ""
+                    "navn2": ""
                 },
                 "forretningsAdresse": {
                     "adresse1": "Gate 2",
