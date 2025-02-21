@@ -30,7 +30,7 @@ class BrregStubClient(
                 .toEntity<String>()
         return BrregStatus(
             melding = res.body ?: "",
-            erOk = res.statusCode.is2xxSuccessful && res.body == "OK",
+            erOk = res.statusCode.is2xxSuccessful && res.body.removeSurrounding("\"") == "OK",
             httpStatus = HttpStatus.valueOf(res.statusCode.value()),
         )
     }
