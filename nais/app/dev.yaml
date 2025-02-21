@@ -5,10 +5,8 @@ replicas_max: 2
 cpu: 400m
 memory: 768Mi
 external-host:
-  - testnav-brregstub-proxy.dev-fss-pub.nais.io
-  # fjerne denne før deploy til prod
-  - brreg-stub.intern.dev.nav.no
+  - testnav-brregstub-reverse-proxy.dev-fss-pub.nais.io
 env:
   SPRING_PROFILES_ACTIVE: default, dev
-  BRREG_STUB_API_URL: https://testnav-brregstub-proxy.dev-fss-pub.nais.io
-  BRREG_STUB_AAD_CLIENT_ID: dev-fss.dolly.testnav-brregstub-proxy
+  BRREG_STUB_API_URL: https://testnav-brregstub-reverse-proxy.dev-fss-pub.nais.io
+  BRREG_STUB_AAD_CLIENT_ID: dev-fss.dolly.testnav-brregstub-reverse-proxy

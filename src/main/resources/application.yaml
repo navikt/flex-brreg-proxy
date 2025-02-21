@@ -24,11 +24,10 @@ no.nav.security.jwt:
   client:
     registration:
       brreg-stub-proxy-client-credentials:
-        # Bruker variabler fra flex-brreg-proxy-nav-tenant-proxy
-        token-endpoint-url: ${AZURE_NAV_OPENID_CONFIG_TOKEN_ENDPOINT}
+        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
         grant-type: client_credentials
-        # scope: api://${BRREG_STUB_AAD_CLIENT_ID}/.default
+        scope: api://${BRREG_STUB_AAD_CLIENT_ID}/.default
         authentication:
-          client-id: ${AZURE_NAV_APP_CLIENT_ID}
-          client-secret: ${AZURE_NAV_APP_CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
