@@ -9,6 +9,7 @@ import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
+import org.springframework.http.HttpStatus
 import org.springframework.test.context.TestPropertySource
 
 @MockServerTestOppsett
@@ -48,7 +49,7 @@ class BrregClientFakesConfig {
 
 class BrregClientFake : BrregClient {
     var roller: List<RolleDto> = emptyList()
-    var status: BrregStatus = BrregStatus("OK", true)
+    var status: BrregStatus = BrregStatus("OK", true, HttpStatus.OK)
     var hentRollerException: Exception? = null
     var hentStatusException: Exception? = null
 
@@ -58,7 +59,7 @@ class BrregClientFake : BrregClient {
 
     fun clear() {
         roller = emptyList()
-        status = BrregStatus("OK", true)
+        status = BrregStatus("OK", true, HttpStatus.OK)
         hentRollerException = null
         hentStatusException = null
     }

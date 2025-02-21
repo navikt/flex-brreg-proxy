@@ -1,6 +1,7 @@
 package no.nav.helse.flex.clients
 
 import org.springframework.context.annotation.Profile
+import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.retry.annotation.Backoff
@@ -29,7 +30,8 @@ class BrregStubClient(
                 .toEntity<String>()
         return BrregStatus(
             melding = res.body ?: "",
-            erOk = res.statusCode.is2xxSuccessful && res.body == "OK",
+            erOk = res.statusCode.is2xxSuccessful && res.body?.removeSurrounding("\"") == "OK",
+            httpStatus = HttpStatus.valueOf(res.statusCode.value()),
         )
     }
 
@@ -77,6 +79,7 @@ internal fun lagStatusMelding(response: ClientHttpResponse): BrregStatus =
     BrregStatus(
         melding = response.statusText,
         erOk = response.statusCode.is2xxSuccessful,
+        httpStatus = HttpStatus.valueOf(response.statusCode.value()),
     )
 
 data class BrregStubResponse(

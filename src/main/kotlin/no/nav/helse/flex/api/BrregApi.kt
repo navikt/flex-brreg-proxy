@@ -16,17 +16,11 @@ class BrregApi(
 
     @GetMapping("/api/v1/brreg-status-ok")
     @Unprotected
-    fun sjekkBrregStatusOk(): ResponseEntity<Boolean> {
-        val erStatusOk =
-            try {
-                brregClient.hentStatus().erOk
-            } catch (_: BrregServerException) {
-                false
-            } catch (_: BrregClientException) {
-                false
-            }
-        return ResponseEntity.ok(erStatusOk)
-    }
+    fun sjekkBrregStatusOk(): ResponseEntity<String> =
+        when (brregClient.hentStatus().erOk) {
+            true -> ResponseEntity.ok("OK")
+            false -> throw BrregServerException("Brreg er ikke ok")
+        }
 
     @PostMapping("/api/v1/roller")
     @ProtectedWithClaims(issuer = "azureator")

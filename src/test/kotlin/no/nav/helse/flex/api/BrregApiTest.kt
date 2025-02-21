@@ -40,7 +40,7 @@ class BrregApiTest {
     inner class BrregStatusOkEndepunkt {
         @Test
         fun `burde ha status ok`() {
-            brregClient.status = BrregStatus("OK", true)
+            brregClient.status = BrregStatus("OK", true, HttpStatus.OK)
 
             val result =
                 mockMvc
@@ -49,20 +49,20 @@ class BrregApiTest {
                     .andReturn()
                     .response.contentAsString
 
-            result `should be equal to` "true"
+            result `should be equal to` "OK"
         }
 
         @Test
         fun `burde ha status ikke ok`() {
-            brregClient.status = BrregStatus("", false)
+            brregClient.status = BrregStatus("", false, HttpStatus.BAD_GATEWAY)
             val result =
                 mockMvc
                     .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status-ok"))
-                    .andExpect(MockMvcResultMatchers.status().isOk)
+                    .andExpect(MockMvcResultMatchers.status().isBadGateway)
                     .andReturn()
                     .response.contentAsString
 
-            result `should be equal to` "false"
+            result `should be equal to` """{"reason":"Bad Gateway. Pga feil fra Brreg: <>"}"""
         }
 
         @Test
@@ -72,11 +72,11 @@ class BrregApiTest {
             val result =
                 mockMvc
                     .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status-ok"))
-                    .andExpect(MockMvcResultMatchers.status().isOk)
+                    .andExpect(MockMvcResultMatchers.status().isBadGateway)
                     .andReturn()
                     .response.contentAsString
 
-            result `should be equal to` "false"
+            result `should be equal to` """{"reason":"Bad Gateway. Pga feil fra Brreg: <>"}"""
         }
 
         @Test
@@ -86,11 +86,11 @@ class BrregApiTest {
             val result =
                 mockMvc
                     .perform(MockMvcRequestBuilders.get("/api/v1/brreg-status-ok"))
-                    .andExpect(MockMvcResultMatchers.status().isOk)
+                    .andExpect(MockMvcResultMatchers.status().isUnauthorized)
                     .andReturn()
                     .response.contentAsString
 
-            result `should be equal to` "false"
+            result `should be equal to` """{"reason":"Unauthorized. Pga feil fra Brreg: <>"}"""
         }
 
         @Test
@@ -105,7 +105,7 @@ class BrregApiTest {
     inner class BrregStatusEndepunkt {
         @Test
         fun `burde ha riktig status`() {
-            brregClient.status = BrregStatus(melding = "OK", erOk = true)
+            brregClient.status = BrregStatus(melding = "OK", erOk = true, httpStatus = HttpStatus.OK)
 
             val result =
                 mockMvc

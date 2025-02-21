@@ -1,6 +1,6 @@
 package no.nav.helse.flex.testdata
 
-fun lagBrregStubIsAliveResponse(isAlive: Boolean) = if (isAlive) "OK" else "NOT OK"
+fun lagBrregStubIsAliveResponse(isAlive: Boolean) = if (isAlive) "\"OK\"" else "NOT OK"
 
 fun lagBrregStubResponse(fnr: String = "11111111111") =
     """

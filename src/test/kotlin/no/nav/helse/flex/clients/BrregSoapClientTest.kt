@@ -107,7 +107,7 @@ class BrregSoapClientTest {
         }
 
         @Test
-        fun `burde håndtere feil i soap respons og kaste exception`() {
+        fun `burde håndtere feil i soap respons og kaste server exception`() {
             brregSoapServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
@@ -119,7 +119,7 @@ class BrregSoapClientTest {
         }
 
         @Test
-        fun `burde håndtere feil i deserialisering av soap respons og kaste exception`() {
+        fun `burde håndtere feil i deserialisering av soap respons og kaste deserialisering exception`() {
             brregSoapServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
@@ -131,7 +131,7 @@ class BrregSoapClientTest {
         }
 
         @Test
-        fun `burde håndtere feil i responseHeader fra Brreg og kaste exception`() {
+        fun `burde håndtere feil i responseHeader fra Brreg og kaste client exception`() {
             brregSoapServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
@@ -139,7 +139,7 @@ class BrregSoapClientTest {
                         .setBody(lagRolleutskriftErrorSoapRespons(headerHovedStatus = -100))
                 }
 
-            invoking { brregSoapClient.hentRoller("11111111111") } `should throw` BrregServerException::class
+            invoking { brregSoapClient.hentRoller("11111111111") } `should throw` BrregClientException::class
         }
     }
 }

@@ -33,7 +33,7 @@ class BrregStubClientTest {
             brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
-                        .setHeader("Content-Type", "application/xml")
+                        .setHeader("Content-Type", "application/json")
                         .setBody(lagBrregStubIsAliveResponse(true))
                 }
 
@@ -46,8 +46,8 @@ class BrregStubClientTest {
             brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
-                        .setHeader("Content-Type", "application/xml")
-                        .setBody(lagRollerSoapResponse(headerHovedStatus = -1))
+                        .setHeader("Content-Type", "application/json")
+                        .setBody(lagBrregStubIsAliveResponse(false))
                 }
 
             val status = brregStubClient.hentStatus()
@@ -77,7 +77,7 @@ class BrregStubClientTest {
                 }
 
             val status = brregStubClient.hentStatus()
-            status.melding `should be equal to` "OK"
+            status.melding `should be equal to` "\"OK\""
         }
     }
 
