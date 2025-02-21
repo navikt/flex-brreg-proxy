@@ -46,6 +46,12 @@ class BrregApi(
 
         return ResponseEntity.ok(RollerDto(filtrerteRoller))
     }
+
+    @PostMapping("/api/v1/rollerApen")
+    @Unprotected
+    fun hentRollerApen(
+        @RequestBody request: HentRollerRequest,
+    ): ResponseEntity<RollerDto> = hentRoller(request)
 }
 
 data class HentRollerRequest(
