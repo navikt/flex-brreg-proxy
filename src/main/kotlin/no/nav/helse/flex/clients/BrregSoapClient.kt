@@ -39,7 +39,7 @@ class BrregSoapClient(
         const val HENT_ROLLER_SERVICE_URL = "http://no/brreg/saksys/grunndata/ws/ErFr/hentRollerRequest"
 
         private val REQUEST_TIMEOUT_MS = 20_000
-        private val BRREG_IKKE_FUNNET = 180
+        private val BRREG_UNDERSTATUS_PERSON_IKKE_FUNNET = 180
     }
 
     private val hentRolleutskriftClient: ErFr = createSoapClientBean(HENT_ROLLEUTSKRIFT_SERVICE_URL)
@@ -77,7 +77,7 @@ class BrregSoapClient(
             httpStatus =
                 if (erOK) {
                     HttpStatus.OK
-                } else if (underStatuser.any { it.kode == BRREG_IKKE_FUNNET }) {
+                } else if (underStatuser.any { it.kode == BRREG_UNDERSTATUS_PERSON_IKKE_FUNNET }) {
                     HttpStatus.NOT_FOUND
                 } else {
                     HttpStatus.BAD_REQUEST
@@ -96,7 +96,7 @@ class BrregSoapClient(
             httpStatus =
                 if (erOK) {
                     HttpStatus.OK
-                } else if (underStatuser.any { it.kode == BRREG_IKKE_FUNNET }) {
+                } else if (underStatuser.any { it.kode == BRREG_UNDERSTATUS_PERSON_IKKE_FUNNET }) {
                     HttpStatus.NOT_FOUND
                 } else {
                     HttpStatus.BAD_REQUEST
