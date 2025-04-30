@@ -67,8 +67,7 @@ configure<SourceSetContainer> {
 }
 
 ktlint {
-    // Temporary: https://github.com/JLLeitschuh/ktlint-gradle/issues/809
-    version.set("1.4.1")
+    version.set("1.5.0")
 }
 
 kotlin {
