@@ -2,8 +2,8 @@ azureTenant: nav.no
 environment: prod
 replicas_min: 2
 replicas_max: 3
-cpu: 500m
-memory: 800Mi
+cpu: 50m
+memory: 640Mi
 external-host:
   - grunndata.brreg.no
 env:
