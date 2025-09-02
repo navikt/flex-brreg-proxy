@@ -26,7 +26,7 @@ repositories {
 val logstashLogbackEncoderVersion = "8.1"
 val kluentVersion = "1.73"
 val commonsTextVersion = "1.14.0"
-val tokenSupportVersion = "5.0.34"
+val tokenSupportVersion = "5.0.35"
 val apacheCxfVersion = "4.1.3"
 
 dependencies {
