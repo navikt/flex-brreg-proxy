@@ -1,5 +1,7 @@
 package no.nav.helse.flex.testdata
 
+import no.nav.helse.flex.clients.BrregSoapClient.Companion.BRREG_UNDERSTATUS_PERSON_IKKE_FUNNET
+
 fun lagRolleutskriftSoapRespons(
     fnr: String = "2020010199999",
     headerHovedStatus: Int = 0,
@@ -138,6 +140,23 @@ fun lagRolleutskriftErrorSoapRespons(headerHovedStatus: Int = 0): String =
               &lt;hovedStatus&gt;$headerHovedStatus&lt;/hovedStatus&gt;
               &lt;underStatus&gt;
                  &lt;underStatusMelding kode="-200"&gt;Test-feil&lt;/underStatusMelding&gt;
+              &lt;/underStatus&gt;
+           &lt;/responseHeader&gt;
+           &lt;melding tjeneste="hentRolleutskrift"/&gt;
+        &lt;/grunndata&gt;
+        """.trimIndent(),
+    )
+
+fun lagRolleutskriftPersonIkkeFunnetSoapRespons(fnr: String = "00000000000"): String =
+    wrapWithRolleutskriftXmlEnvelope(
+        """
+        &lt;?xml version="1.0"?&gt;
+        &lt;grunndata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.brreg.no/grunndata/hentRolleutskrift.xsd"&gt;
+           &lt;responseHeader prossessDato="2020-04-20" tjeneste="hentRolleutskrift"&gt;
+              &lt;fodselsnr&gt;$fnr&lt;/fodselsnr&gt;
+              &lt;hovedStatus&gt;-1&lt;/hovedStatus&gt;
+              &lt;underStatus&gt;
+                 &lt;underStatusMelding kode="$BRREG_UNDERSTATUS_PERSON_IKKE_FUNNET"&gt;Fodselsnummer finnes ikke&lt;/underStatusMelding&gt;
               &lt;/underStatus&gt;
            &lt;/responseHeader&gt;
            &lt;melding tjeneste="hentRolleutskrift"/&gt;

@@ -1,6 +1,11 @@
 package no.nav.helse.flex.clients
 
-import no.nav.helse.flex.testoppsett.*
+import no.nav.helse.flex.testdata.lagRolleutskriftErrorSoapRespons
+import no.nav.helse.flex.testdata.lagRolleutskriftPersonIkkeFunnetSoapRespons
+import no.nav.helse.flex.testoppsett.BrregSoapClientOppsett
+import no.nav.helse.flex.testoppsett.FellesTestOppsett
+import no.nav.helse.flex.testoppsett.RetryTestOppsett
+import no.nav.helse.flex.testoppsett.simpleDispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.`should be equal to`
@@ -49,5 +54,37 @@ class BrregSoapClientRetryTest {
             brregSoapClient.hentStatus()
         }
         antallKall `should be equal to` 3
+    }
+
+    @Test
+    fun `burde ikke retrye ved NOT_FOUND når person ikke finnes`() {
+        var antallKall = 0
+        brregSoapServer.dispatcher =
+            simpleDispatcher {
+                antallKall++
+                MockResponse()
+                    .setHeader("Content-Type", "application/xml")
+                    .setBody(lagRolleutskriftPersonIkkeFunnetSoapRespons())
+            }
+
+        brregSoapClient.hentRoller("00000000000")
+
+        antallKall `should be equal to` 1
+    }
+
+    @Test
+    fun `burde ikke retrye ved BrregClientException`() {
+        var antallKall = 0
+        brregSoapServer.dispatcher =
+            simpleDispatcher {
+                antallKall++
+                MockResponse()
+                    .setHeader("Content-Type", "application/xml")
+                    .setBody(lagRolleutskriftErrorSoapRespons(headerHovedStatus = -100))
+            }
+
+        runCatching { brregSoapClient.hentRoller("00000000000") }
+
+        antallKall `should be equal to` 1
     }
 }
