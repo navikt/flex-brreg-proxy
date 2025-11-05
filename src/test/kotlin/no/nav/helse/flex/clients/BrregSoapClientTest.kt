@@ -2,6 +2,7 @@ package no.nav.helse.flex.clients
 
 import no.nav.helse.flex.testdata.lagRollerSoapResponse
 import no.nav.helse.flex.testdata.lagRolleutskriftErrorSoapRespons
+import no.nav.helse.flex.testdata.lagRolleutskriftPersonIkkeFunnetSoapRespons
 import no.nav.helse.flex.testdata.lagRolleutskriftSoapRespons
 import no.nav.helse.flex.testdata.wrapWithRolleutskriftXmlEnvelope
 import no.nav.helse.flex.testoppsett.*
@@ -92,7 +93,7 @@ class BrregSoapClientTest {
                 }
             val roller = brregSoapClient.hentRoller("11111111111")
 
-            roller.size `should be equal to` 4
+            roller.shouldHaveSize(4)
             roller.forEach { it.organisasjonsnummer.shouldNotBeNullOrBlank() }
             roller.let {
                 it[0].rolletype.beskrivelse `should be equal to` Rolletype.INNH.beskrivelse
@@ -104,6 +105,19 @@ class BrregSoapClientTest {
                 it[3].rolletype.beskrivelse `should be equal to` Rolletype.MEDL.beskrivelse
                 it[3].organisasjonsnavn `should be equal to` "NAV Boretteslag"
             }
+        }
+
+        @Test
+        fun `burde håndtere NOT_FOUND feil i responsHeader fra brreg og returnere tom liste`() {
+            brregSoapServer.dispatcher =
+                simpleDispatcher {
+                    MockResponse()
+                        .setHeader("Content-Type", "application/xml")
+                        .setBody(lagRolleutskriftPersonIkkeFunnetSoapRespons("00000000000"))
+                }
+
+            val roller = brregSoapClient.hentRoller("00000000000")
+            roller.shouldHaveSize(0)
         }
 
         @Test

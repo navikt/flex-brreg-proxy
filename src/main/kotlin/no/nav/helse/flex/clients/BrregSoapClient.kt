@@ -39,7 +39,7 @@ class BrregSoapClient(
         const val HENT_ROLLER_SERVICE_URL = "http://no/brreg/saksys/grunndata/ws/ErFr/hentRollerRequest"
 
         private val REQUEST_TIMEOUT_MS = 20_000
-        private val BRREG_UNDERSTATUS_PERSON_IKKE_FUNNET = 180
+        val BRREG_UNDERSTATUS_PERSON_IKKE_FUNNET = 180
     }
 
     private val hentRolleutskriftClient: ErFr = createSoapClientBean(HENT_ROLLEUTSKRIFT_SERVICE_URL)
@@ -59,14 +59,14 @@ class BrregSoapClient(
     )
     override fun hentRoller(fnr: String): List<RolleDto> = hentRollerBrregSoap(fnr)
 
-    internal fun hentResponsStatus(): BrregStatus {
+    private fun hentResponsStatus(): BrregStatus {
         val navOrgnummerForSjekk = "889640782"
         val respons = hentRollerGrunndata(orgnummer = navOrgnummerForSjekk)
         val status = lagStatusMelding(respons.responseHeader)
         return status
     }
 
-    fun lagStatusMelding(responseHeader: RolleutskriftGrunndata.ResponseHeader): BrregStatus {
+    private fun lagStatusMelding(responseHeader: RolleutskriftGrunndata.ResponseHeader): BrregStatus {
         val hovedStatus = responseHeader.hovedStatus
         val erOK = hovedStatus == 0
         val underStatuser = responseHeader.underStatus.underStatusMelding
@@ -85,7 +85,7 @@ class BrregSoapClient(
         )
     }
 
-    fun lagStatusMelding(responseHeader: RollerGrunndata.ResponseHeader): BrregStatus {
+    private fun lagStatusMelding(responseHeader: RollerGrunndata.ResponseHeader): BrregStatus {
         val hovedStatus = responseHeader.hovedStatus
         val erOK = hovedStatus == 0
         val underStatuser = responseHeader.underStatus.underStatusMelding
@@ -104,19 +104,27 @@ class BrregSoapClient(
         )
     }
 
-    internal fun hentRollerBrregSoap(fnr: String): List<RolleDto> {
+    private fun hentRollerBrregSoap(fnr: String): List<RolleDto> {
         val grunndata = hentRolleutskrift(fnr = fnr)
 
         val status = lagStatusMelding(grunndata.responseHeader)
         if (!status.erOk || grunndata.melding == null) {
-            if (status.httpStatus != HttpStatus.NOT_FOUND) {
-                log.error("Feil fra Brreg API ved henting av roller. Status: ${status.anonymisertMelding()}")
+            when (status.httpStatus) {
+                HttpStatus.NOT_FOUND -> {
+                    log.warn(
+                        "Person ikke funnet i Brreg. Status: ${status.httpStatus.value()}: ${status.anonymisertMelding()}",
+                    )
+                    return emptyList()
+                }
+                else -> {
+                    log.error("Feil fra Brreg API ved henting av roller. Status: ${status.anonymisertMelding()}")
+                    throw BrregClientException(
+                        message = "Feil fra Brreg API ved henting av roller",
+                        httpStatus = status.httpStatus.value(),
+                        httpMessage = status.anonymisertMelding(),
+                    )
+                }
             }
-            throw BrregClientException(
-                message = "Feil fra Brreg API ved henting av roller",
-                httpStatus = status.httpStatus.value(),
-                httpMessage = status.anonymisertMelding(),
-            )
         }
 
         return grunndata.melding.roller.enhet
@@ -134,7 +142,7 @@ class BrregSoapClient(
             }
     }
 
-    fun hentRollerGrunndata(orgnummer: String): RollerGrunndata {
+    private fun hentRollerGrunndata(orgnummer: String): RollerGrunndata {
         val startMs = System.currentTimeMillis()
         val response =
             try {
@@ -156,7 +164,7 @@ class BrregSoapClient(
         return deserializedResponse
     }
 
-    fun hentRolleutskrift(fnr: String): RolleutskriftGrunndata {
+    private fun hentRolleutskrift(fnr: String): RolleutskriftGrunndata {
         val startMs = System.currentTimeMillis()
         val response =
             try {

@@ -8,6 +8,7 @@ import no.nav.helse.flex.testdata.lagRolle
 import no.nav.helse.flex.testoppsett.*
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import org.amshove.kluent.`should be equal to`
+import org.amshove.kluent.shouldHaveSize
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -80,7 +81,7 @@ class BrregApiTest {
         }
 
         @Test
-        fun `burde ha status ikke ok ved BrregClientException i client`() {
+        fun `burde ha status UNAUTHORIZED ved BrregClientException i client`() {
             brregClient.hentStatusException = BrregClientException(message = "", httpStatus = HttpStatus.UNAUTHORIZED.value())
 
             val result =
@@ -211,19 +212,23 @@ class BrregApiTest {
         }
 
         @Test
-        fun `burde returnere NOT_FOUND ved brreg NOT_FOUND`() {
-            brregClient.hentRollerException = BrregClientException(message = "", httpStatus = HttpStatus.NOT_FOUND.value())
-
+        fun `burde returnere tom liste ved brreg NOT_FOUND`() {
             val token = oauthServer.skapAzureJwt()
 
-            mockMvc
-                .perform(
-                    MockMvcRequestBuilders
-                        .post("/api/v1/roller")
-                        .header("Authorization", "Bearer $token")
-                        .content("""{"fnr":"00000000000"}""")
-                        .contentType(MediaType.APPLICATION_JSON),
-                ).andExpect(MockMvcResultMatchers.status().isNotFound)
+            val result =
+                mockMvc
+                    .perform(
+                        MockMvcRequestBuilders
+                            .post("/api/v1/roller")
+                            .header("Authorization", "Bearer $token")
+                            .content("""{"fnr":"00000000000"}""")
+                            .contentType(MediaType.APPLICATION_JSON),
+                    ).andExpect(MockMvcResultMatchers.status().isOk)
+                    .andReturn()
+                    .response.contentAsString
+
+            val rollerDto: RollerDto = objectMapper.readValue(result)
+            rollerDto.roller.shouldHaveSize(0)
         }
 
         @Test
