@@ -51,12 +51,20 @@ class BrregStubClient(
 
     fun hentRolleoversikt(fnr: String): BrregStubResponse? {
         val uri = brregRestClient.get().uri { uriBuilder -> uriBuilder.path("/api/v2/rolleoversikt").build() }
-        return uri
-            .header("Nav-Personident", fnr)
-            .retrieve()
-            .mapStatusTilExceptions()
-            .toEntity<BrregStubResponse>()
-            .body
+        return try {
+            uri
+                .header("Nav-Personident", fnr)
+                .retrieve()
+                .mapStatusTilExceptions()
+                .toEntity<BrregStubResponse>()
+                .body
+        } catch (e: BrregClientException) {
+            if (e.httpStatus == 404) {
+                null
+            } else {
+                throw e
+            }
+        }
     }
 }
 
