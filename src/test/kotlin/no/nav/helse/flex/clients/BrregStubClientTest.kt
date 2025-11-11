@@ -102,7 +102,7 @@ class BrregStubClientTest {
         }
 
         @Test
-        fun `burde håndtere 404 feil i stub respons og kaste exception`() {
+        fun `burde håndtere 404 feil i stub respons og returnere tom liste`() {
             brregStubServer.dispatcher =
                 simpleDispatcher {
                     MockResponse()
@@ -121,7 +121,7 @@ class BrregStubClientTest {
                         )
                 }
 
-            invoking { brregStubClient.hentRoller(fnr = "_") } `should throw` BrregClientException::class
+            brregStubClient.hentRoller(fnr = "_").`should be empty`()
         }
 
         @Test
