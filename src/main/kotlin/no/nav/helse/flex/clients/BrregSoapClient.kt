@@ -25,11 +25,11 @@ import generated.rolleutskrift.Grunndata as RolleutskriftGrunndata
 @Profile("prod")
 @Component
 class BrregSoapClient(
-    @Value("\${BRREG_USERNAME}")
+    @param:Value("\${BRREG_USERNAME}")
     private val username: String,
-    @Value("\${BRREG_PASSWORD}")
+    @param:Value("\${BRREG_PASSWORD}")
     private val password: String,
-    @Value("\${BRREG_URL}")
+    @param:Value("\${BRREG_URL}")
     private val brregUrl: String,
 ) : BrregClient {
     private val log = logger()
