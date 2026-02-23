@@ -27,7 +27,7 @@ val logstashLogbackEncoderVersion = "9.0"
 val kluentVersion = "1.73"
 val commonsTextVersion = "1.15.0"
 val tokenSupportVersion = "5.0.39"
-val apacheCxfVersion = "4.1.4"
+val apacheCxfVersion = "4.2.0"
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
