@@ -4,6 +4,7 @@ import no.nav.security.token.support.client.core.ClientProperties
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.spring.ClientConfigurationProperties
 import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client
+import org.apache.hc.client5.http.config.ConnectionConfig
 import org.apache.hc.client5.http.config.RequestConfig
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager
@@ -48,6 +49,12 @@ class RestClientConfig {
             PoolingHttpClientConnectionManager().apply {
                 maxTotal = 10
                 defaultMaxPerRoute = 10
+                setDefaultConnectionConfig(
+                    ConnectionConfig
+                        .custom()
+                        .setConnectTimeout(API_CONNECT_TIMEOUT, TimeUnit.SECONDS)
+                        .build(),
+                )
             }
 
         val httpClient =
@@ -57,7 +64,6 @@ class RestClientConfig {
                 .setDefaultRequestConfig(
                     RequestConfig
                         .custom()
-                        .setConnectTimeout(API_CONNECT_TIMEOUT, TimeUnit.SECONDS)
                         .setResponseTimeout(API_READ_TIMEOUT, TimeUnit.SECONDS)
                         .build(),
                 ).build()
