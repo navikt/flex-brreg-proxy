@@ -4,6 +4,8 @@ import no.nav.security.token.support.client.core.ClientProperties
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.spring.ClientConfigurationProperties
 import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client
+import org.apache.hc.client5.http.config.ConnectionConfig
+import org.apache.hc.client5.http.config.RequestConfig
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager
 import org.springframework.beans.factory.annotation.Value
@@ -16,7 +18,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.RestClient
-import java.time.Duration
+import java.util.concurrent.TimeUnit
 
 const val API_CONNECT_TIMEOUT = 3L
 const val API_READ_TIMEOUT = 3L
@@ -47,19 +49,26 @@ class RestClientConfig {
             PoolingHttpClientConnectionManager().apply {
                 maxTotal = 10
                 defaultMaxPerRoute = 10
+                setDefaultConnectionConfig(
+                    ConnectionConfig
+                        .custom()
+                        .setConnectTimeout(API_CONNECT_TIMEOUT, TimeUnit.SECONDS)
+                        .build(),
+                )
             }
 
         val httpClient =
             HttpClientBuilder
                 .create()
                 .setConnectionManager(connectionManager)
-                .build()
+                .setDefaultRequestConfig(
+                    RequestConfig
+                        .custom()
+                        .setResponseTimeout(API_READ_TIMEOUT, TimeUnit.SECONDS)
+                        .build(),
+                ).build()
 
-        val requestFactory =
-            HttpComponentsClientHttpRequestFactory(httpClient).apply {
-                setConnectTimeout(Duration.ofSeconds(API_CONNECT_TIMEOUT))
-                setReadTimeout(Duration.ofSeconds(API_READ_TIMEOUT))
-            }
+        val requestFactory = HttpComponentsClientHttpRequestFactory(httpClient)
 
         val clientProperties =
             clientConfigurationProperties.registration[registrationName]
