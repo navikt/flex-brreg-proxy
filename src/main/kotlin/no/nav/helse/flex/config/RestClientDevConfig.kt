@@ -4,8 +4,10 @@ import no.nav.security.token.support.client.core.ClientProperties
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.spring.ClientConfigurationProperties
 import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client
+import org.apache.hc.client5.http.config.RequestConfig
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager
+import org.apache.hc.core5.util.Timeout
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -16,7 +18,6 @@ import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.RestClient
-import java.time.Duration
 
 const val API_CONNECT_TIMEOUT = 3L
 const val API_READ_TIMEOUT = 3L
@@ -53,13 +54,15 @@ class RestClientConfig {
             HttpClientBuilder
                 .create()
                 .setConnectionManager(connectionManager)
-                .build()
+                .setDefaultRequestConfig(
+                    RequestConfig
+                        .custom()
+                        .setConnectTimeout(Timeout.ofSeconds(API_CONNECT_TIMEOUT))
+                        .setResponseTimeout(Timeout.ofSeconds(API_READ_TIMEOUT))
+                        .build(),
+                ).build()
 
-        val requestFactory =
-            HttpComponentsClientHttpRequestFactory(httpClient).apply {
-                setConnectTimeout(Duration.ofSeconds(API_CONNECT_TIMEOUT))
-                setReadTimeout(Duration.ofSeconds(API_READ_TIMEOUT))
-            }
+        val requestFactory = HttpComponentsClientHttpRequestFactory(httpClient)
 
         val clientProperties =
             clientConfigurationProperties.registration[registrationName]
