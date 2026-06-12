@@ -52,7 +52,7 @@ dependencies {
 
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$apacheCxfVersion")
     implementation("org.apache.cxf:cxf-rt-transports-http:$apacheCxfVersion")
-    implementation("com.sun.xml.messaging.saaj:saaj-impl:3.0.5")
+    implementation("com.sun.xml.messaging.saaj:saaj-impl:3.0.6")
 
     testImplementation("no.nav.security:token-validation-spring-test:$tokenSupportVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
