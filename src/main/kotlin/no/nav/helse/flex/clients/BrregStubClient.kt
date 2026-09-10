@@ -4,8 +4,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.client.ClientHttpResponse
-import org.springframework.retry.annotation.Backoff
-import org.springframework.retry.annotation.Retryable
+import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.toEntity
@@ -16,9 +15,9 @@ class BrregStubClient(
     private val brregRestClient: RestClient,
 ) : BrregClient {
     @Retryable(
-        include = [BrregServerException::class],
-        maxAttempts = 3,
-        backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
+        includes = [BrregServerException::class],
+        maxRetries = 2,
+        delayString = $$"${BRREG_RETRY_BACKOFF_MS:1000}",
     )
     override fun hentStatus(): BrregStatus {
         val uri = brregRestClient.get().uri { uriBuilder -> uriBuilder.path("/isAlive").build() }
@@ -36,9 +35,9 @@ class BrregStubClient(
     }
 
     @Retryable(
-        include = [BrregServerException::class],
-        maxAttempts = 3,
-        backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
+        includes = [BrregServerException::class],
+        maxRetries = 2,
+        delayString = $$"${BRREG_RETRY_BACKOFF_MS:1000}",
     )
     override fun hentRoller(fnr: String): List<RolleDto> =
         hentRolleoversikt(fnr)?.enheter?.map {
