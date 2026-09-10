@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
-import org.springframework.retry.annotation.EnableRetry
+import org.springframework.resilience.annotation.EnableResilientMethods
 import org.springframework.scheduling.annotation.EnableScheduling
 
 @SpringBootApplication
@@ -18,6 +18,6 @@ fun main(args: Array<String>) {
 @Profile("default")
 @Configuration
 @EnableScheduling
-@EnableRetry
+@EnableResilientMethods
 @EnableJwtTokenValidation
 class DefaultConfig
