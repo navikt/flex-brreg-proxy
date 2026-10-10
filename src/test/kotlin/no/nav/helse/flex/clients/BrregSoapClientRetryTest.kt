@@ -1,13 +1,13 @@
 package no.nav.helse.flex.clients
 
+import mockwebserver3.MockResponse
+import mockwebserver3.MockWebServer
 import no.nav.helse.flex.testdata.lagRolleutskriftErrorSoapRespons
 import no.nav.helse.flex.testdata.lagRolleutskriftPersonIkkeFunnetSoapRespons
 import no.nav.helse.flex.testoppsett.BrregSoapClientOppsett
 import no.nav.helse.flex.testoppsett.FellesTestOppsett
 import no.nav.helse.flex.testoppsett.RetryTestOppsett
 import no.nav.helse.flex.testoppsett.simpleDispatcher
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,9 +28,11 @@ class BrregSoapClientRetryTest {
         brregSoapServer.dispatcher =
             simpleDispatcher {
                 antallKall++
-                MockResponse()
+                MockResponse
+                    .Builder()
                     .setHeader("Content-Type", "application/xml")
-                    .setBody("Feil i soap respons")
+                    .body("Feil i soap respons")
+                    .build()
             }
 
         runCatching {
@@ -45,9 +47,11 @@ class BrregSoapClientRetryTest {
         brregSoapServer.dispatcher =
             simpleDispatcher {
                 antallKall++
-                MockResponse()
+                MockResponse
+                    .Builder()
                     .setHeader("Content-Type", "application/xml")
-                    .setBody("Feil i soap respons")
+                    .body("Feil i soap respons")
+                    .build()
             }
 
         runCatching {
@@ -62,9 +66,11 @@ class BrregSoapClientRetryTest {
         brregSoapServer.dispatcher =
             simpleDispatcher {
                 antallKall++
-                MockResponse()
+                MockResponse
+                    .Builder()
                     .setHeader("Content-Type", "application/xml")
-                    .setBody(lagRolleutskriftPersonIkkeFunnetSoapRespons())
+                    .body(lagRolleutskriftPersonIkkeFunnetSoapRespons())
+                    .build()
             }
 
         brregSoapClient.hentRoller("00000000000")
@@ -78,9 +84,11 @@ class BrregSoapClientRetryTest {
         brregSoapServer.dispatcher =
             simpleDispatcher {
                 antallKall++
-                MockResponse()
+                MockResponse
+                    .Builder()
                     .setHeader("Content-Type", "application/xml")
-                    .setBody(lagRolleutskriftErrorSoapRespons(headerHovedStatus = -100))
+                    .body(lagRolleutskriftErrorSoapRespons(headerHovedStatus = -100))
+                    .build()
             }
 
         runCatching { brregSoapClient.hentRoller("00000000000") }

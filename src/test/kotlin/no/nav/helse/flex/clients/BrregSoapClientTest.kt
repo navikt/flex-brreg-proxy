@@ -1,14 +1,14 @@
 package no.nav.helse.flex.clients
 
+import mockwebserver3.MockResponse
+import mockwebserver3.MockWebServer
+import mockwebserver3.QueueDispatcher
 import no.nav.helse.flex.testdata.lagRollerSoapResponse
 import no.nav.helse.flex.testdata.lagRolleutskriftErrorSoapRespons
 import no.nav.helse.flex.testdata.lagRolleutskriftPersonIkkeFunnetSoapRespons
 import no.nav.helse.flex.testdata.lagRolleutskriftSoapRespons
 import no.nav.helse.flex.testdata.wrapWithRolleutskriftXmlEnvelope
 import no.nav.helse.flex.testoppsett.*
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.QueueDispatcher
 import org.amshove.kluent.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
@@ -36,9 +36,11 @@ class BrregSoapClientTest {
         fun `burde ha status ok`() {
             brregSoapServer.dispatcher =
                 simpleDispatcher {
-                    MockResponse()
+                    MockResponse
+                        .Builder()
                         .setHeader("Content-Type", "application/xml")
-                        .setBody(lagRollerSoapResponse(headerHovedStatus = 0))
+                        .body(lagRollerSoapResponse(headerHovedStatus = 0))
+                        .build()
                 }
             brregSoapClient.hentStatus().erOk.shouldBeTrue()
         }
@@ -47,9 +49,11 @@ class BrregSoapClientTest {
         fun `burde ha status ikke ok ved feil status`() {
             brregSoapServer.dispatcher =
                 simpleDispatcher {
-                    MockResponse()
+                    MockResponse
+                        .Builder()
                         .setHeader("Content-Type", "application/xml")
-                        .setBody(lagRollerSoapResponse(headerHovedStatus = -1))
+                        .body(lagRollerSoapResponse(headerHovedStatus = -1))
+                        .build()
                 }
 
             brregSoapClient.hentStatus().erOk.shouldBeFalse()
@@ -59,9 +63,11 @@ class BrregSoapClientTest {
         fun `burde ha status ikke ok ved feil i soap api`() {
             brregSoapServer.dispatcher =
                 simpleDispatcher {
-                    MockResponse()
+                    MockResponse
+                        .Builder()
                         .setHeader("Content-Type", "application/xml")
-                        .setResponseCode(HttpStatus.UNAUTHORIZED.value())
+                        .code(HttpStatus.UNAUTHORIZED.value())
+                        .build()
                 }
 
             invoking { brregSoapClient.hentStatus() } `should throw` BrregServerException::class
@@ -71,9 +77,11 @@ class BrregSoapClientTest {
         fun `burde ha riktig status melding`() {
             brregSoapServer.dispatcher =
                 simpleDispatcher {
-                    MockResponse()
+                    MockResponse
+                        .Builder()
                         .setHeader("Content-Type", "application/xml")
-                        .setBody(lagRollerSoapResponse(headerHovedStatus = 500))
+                        .body(lagRollerSoapResponse(headerHovedStatus = 500))
+                        .build()
                 }
 
             brregSoapClient.hentStatus().melding `should be equal to`
@@ -87,9 +95,11 @@ class BrregSoapClientTest {
         fun `burde returnere roller`() {
             brregSoapServer.dispatcher =
                 simpleDispatcher {
-                    MockResponse()
+                    MockResponse
+                        .Builder()
                         .setHeader("Content-Type", "application/xml")
-                        .setBody(lagRolleutskriftSoapRespons())
+                        .body(lagRolleutskriftSoapRespons())
+                        .build()
                 }
             val roller = brregSoapClient.hentRoller("11111111111")
 
@@ -111,9 +121,11 @@ class BrregSoapClientTest {
         fun `burde håndtere NOT_FOUND feil i responsHeader fra brreg og returnere tom liste`() {
             brregSoapServer.dispatcher =
                 simpleDispatcher {
-                    MockResponse()
+                    MockResponse
+                        .Builder()
                         .setHeader("Content-Type", "application/xml")
-                        .setBody(lagRolleutskriftPersonIkkeFunnetSoapRespons("00000000000"))
+                        .body(lagRolleutskriftPersonIkkeFunnetSoapRespons("00000000000"))
+                        .build()
                 }
 
             val roller = brregSoapClient.hentRoller("00000000000")
@@ -124,9 +136,11 @@ class BrregSoapClientTest {
         fun `burde håndtere feil i soap respons og kaste server exception`() {
             brregSoapServer.dispatcher =
                 simpleDispatcher {
-                    MockResponse()
+                    MockResponse
+                        .Builder()
                         .setHeader("Content-Type", "application/xml")
-                        .setBody("Feil i soap respons")
+                        .body("Feil i soap respons")
+                        .build()
                 }
 
             invoking { brregSoapClient.hentRoller("11111111111") } `should throw` BrregServerException::class
@@ -136,9 +150,11 @@ class BrregSoapClientTest {
         fun `burde håndtere feil i deserialisering av soap respons og kaste deserialisering exception`() {
             brregSoapServer.dispatcher =
                 simpleDispatcher {
-                    MockResponse()
+                    MockResponse
+                        .Builder()
                         .setHeader("Content-Type", "application/xml")
-                        .setBody(wrapWithRolleutskriftXmlEnvelope("test"))
+                        .body(wrapWithRolleutskriftXmlEnvelope("test"))
+                        .build()
                 }
 
             invoking { brregSoapClient.hentRoller("11111111111") } `should throw` BrregDeserializationException::class
@@ -148,9 +164,11 @@ class BrregSoapClientTest {
         fun `burde håndtere feil i responseHeader fra Brreg og kaste client exception`() {
             brregSoapServer.dispatcher =
                 simpleDispatcher {
-                    MockResponse()
+                    MockResponse
+                        .Builder()
                         .setHeader("Content-Type", "application/xml")
-                        .setBody(lagRolleutskriftErrorSoapRespons(headerHovedStatus = -100))
+                        .body(lagRolleutskriftErrorSoapRespons(headerHovedStatus = -100))
+                        .build()
                 }
 
             invoking { brregSoapClient.hentRoller("11111111111") } `should throw` BrregClientException::class
