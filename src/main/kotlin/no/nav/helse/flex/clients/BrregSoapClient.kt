@@ -13,8 +13,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
-import org.springframework.retry.annotation.Backoff
-import org.springframework.retry.annotation.Retryable
+import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Component
 import java.io.StringReader
 import javax.xml.namespace.QName
@@ -38,24 +37,24 @@ class BrregSoapClient(
         const val HENT_ROLLEUTSKRIFT_SERVICE_URL = "http://no/brreg/saksys/grunndata/ws/ErFr/hentRolleutskriftRequest"
         const val HENT_ROLLER_SERVICE_URL = "http://no/brreg/saksys/grunndata/ws/ErFr/hentRollerRequest"
 
-        private val REQUEST_TIMEOUT_MS = 20_000
-        val BRREG_UNDERSTATUS_PERSON_IKKE_FUNNET = 180
+        private const val REQUEST_TIMEOUT_MS = 20_000
+        const val BRREG_UNDERSTATUS_PERSON_IKKE_FUNNET = 180
     }
 
     private val hentRolleutskriftClient: ErFr = createSoapClientBean(HENT_ROLLEUTSKRIFT_SERVICE_URL)
     private val hentRollerClient: ErFr = createSoapClientBean(HENT_ROLLER_SERVICE_URL)
 
     @Retryable(
-        include = [BrregServerException::class],
-        maxAttempts = 3,
-        backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
+        includes = [BrregServerException::class],
+        maxRetries = 2,
+        delayString = $$"${BRREG_RETRY_BACKOFF_MS:1000}",
     )
     override fun hentStatus(): BrregStatus = hentResponsStatus()
 
     @Retryable(
-        include = [BrregServerException::class],
-        maxAttempts = 3,
-        backoff = Backoff(delayExpression = "\${BRREG_RETRY_BACKOFF_MS:1000}"),
+        includes = [BrregServerException::class],
+        maxRetries = 2,
+        delayString = $$"${BRREG_RETRY_BACKOFF_MS:1000}",
     )
     override fun hentRoller(fnr: String): List<RolleDto> = hentRollerBrregSoap(fnr)
 

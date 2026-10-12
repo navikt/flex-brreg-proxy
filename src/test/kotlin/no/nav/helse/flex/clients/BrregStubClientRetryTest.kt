@@ -1,8 +1,8 @@
 package no.nav.helse.flex.clients
 
+import mockwebserver3.MockResponse
+import mockwebserver3.MockWebServer
 import no.nav.helse.flex.testoppsett.*
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,9 +24,11 @@ class BrregStubClientRetryTest {
         brregStubServer.dispatcher =
             simpleDispatcher {
                 antallKall++
-                MockResponse()
+                MockResponse
+                    .Builder()
                     .setHeader("Content-Type", "application/json")
-                    .setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .build()
             }
 
         runCatching {
@@ -41,9 +43,11 @@ class BrregStubClientRetryTest {
         brregStubServer.dispatcher =
             simpleDispatcher {
                 antallKall++
-                MockResponse()
+                MockResponse
+                    .Builder()
                     .setHeader("Content-Type", "application/json")
-                    .setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .build()
             }
 
         runCatching {

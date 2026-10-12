@@ -1,10 +1,10 @@
 package no.nav.helse.flex.testoppsett
 
+import mockwebserver3.Dispatcher
+import mockwebserver3.MockResponse
+import mockwebserver3.MockWebServer
+import mockwebserver3.RecordedRequest
 import no.nav.helse.flex.config.logger
-import okhttp3.mockwebserver.Dispatcher
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.RecordedRequest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
@@ -30,12 +30,14 @@ class MockWebServereConfig {
         val brregSoapServer =
             MockWebServer()
                 .also {
+                    it.start()
                     System.setProperty("BRREG_URL", "http://localhost:${it.port}/brreg/grunndata/v1")
                 }
 
         val brregStubServer =
             MockWebServer()
                 .also {
+                    it.start()
                     System.setProperty("BRREG_STUB_API_URL", "http://localhost:${it.port}")
                 }
     }
