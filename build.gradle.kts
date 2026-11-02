@@ -26,7 +26,7 @@ val kluentVersion = "1.73"
 val commonsTextVersion = "1.15.0"
 val tokenSupportVersion = "6.0.12"
 val apacheCxfVersion = "4.2.4"
-val mockWebServerVersion = "5.5.0"
+val mockWebServerVersion = "5.5.1"
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
