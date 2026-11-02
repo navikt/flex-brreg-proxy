@@ -1,9 +1,9 @@
 package no.nav.helse.flex.clients
 
+import io.kotest.matchers.shouldBe
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
 import no.nav.helse.flex.testoppsett.*
-import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -34,7 +34,7 @@ class BrregStubClientRetryTest {
         runCatching {
             brregStubClient.hentRoller("fnr")
         }
-        antallKall `should be equal to` 3
+        antallKall shouldBe 3
     }
 
     @Test
@@ -53,6 +53,6 @@ class BrregStubClientRetryTest {
         runCatching {
             brregStubClient.hentStatus()
         }
-        antallKall `should be equal to` 3
+        antallKall shouldBe 3
     }
 }

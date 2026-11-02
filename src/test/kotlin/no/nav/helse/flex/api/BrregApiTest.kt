@@ -1,5 +1,7 @@
 package no.nav.helse.flex.api
 
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.shouldBe
 import no.nav.helse.flex.clients.BrregClientException
 import no.nav.helse.flex.clients.BrregServerException
 import no.nav.helse.flex.clients.BrregStatus
@@ -14,8 +16,6 @@ import no.nav.helse.flex.testoppsett.BrregClientFakesOppsett
 import no.nav.helse.flex.testoppsett.FellesTestOppsett
 import no.nav.helse.flex.testoppsett.skapAzureJwt
 import no.nav.security.mock.oauth2.MockOAuth2Server
-import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.shouldHaveSize
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -58,7 +58,7 @@ class BrregApiTest {
                     .andReturn()
                     .response.contentAsString
 
-            result `should be equal to` "OK"
+            result shouldBe "OK"
         }
 
         @Test
@@ -71,7 +71,7 @@ class BrregApiTest {
                     .andReturn()
                     .response.contentAsString
 
-            result `should be equal to` """{"reason":"Bad Gateway. Pga feil fra Brreg: <>"}"""
+            result shouldBe """{"reason":"Bad Gateway. Pga feil fra Brreg: <>"}"""
         }
 
         @Test
@@ -85,7 +85,7 @@ class BrregApiTest {
                     .andReturn()
                     .response.contentAsString
 
-            result `should be equal to` """{"reason":"Bad Gateway. Pga feil fra Brreg: <>"}"""
+            result shouldBe """{"reason":"Bad Gateway. Pga feil fra Brreg: <>"}"""
         }
 
         @Test
@@ -99,7 +99,7 @@ class BrregApiTest {
                     .andReturn()
                     .response.contentAsString
 
-            result `should be equal to` """{"reason":"Unauthorized. Pga feil fra Brreg: <>"}"""
+            result shouldBe """{"reason":"Unauthorized. Pga feil fra Brreg: <>"}"""
         }
 
         @Test
@@ -124,8 +124,8 @@ class BrregApiTest {
                     .response.contentAsString
 
             val status: BrregStatus = objectMapper.readValue(result)
-            status.melding `should be equal to` "OK"
-            status.erOk `should be equal to` true
+            status.melding shouldBe "OK"
+            status.erOk shouldBe true
         }
 
         @Test
@@ -162,11 +162,11 @@ class BrregApiTest {
 
             val rollerDto: RollerDto = objectMapper.readValue(result)
             val roller = rollerDto.roller
-            roller.size `should be equal to` 1
+            roller.size shouldBe 1
             roller.first().let {
-                it.rolletype `should be equal to` Rolletype.INNH
-                it.organisasjonsnavn `should be equal to` "Mitt selskap Etternavn"
-                it.organisasjonsnummer `should be equal to` "123456789"
+                it.rolletype shouldBe Rolletype.INNH
+                it.organisasjonsnavn shouldBe "Mitt selskap Etternavn"
+                it.organisasjonsnummer shouldBe "123456789"
             }
         }
 
@@ -188,7 +188,7 @@ class BrregApiTest {
 
             val rollerDto: RollerDto = objectMapper.readValue(result)
             val roller = rollerDto.roller
-            roller.size `should be equal to` 2
+            roller.size shouldBe 2
         }
 
         @Test
@@ -215,8 +215,8 @@ class BrregApiTest {
 
             val rollerDto: RollerDto = objectMapper.readValue(result)
             val roller = rollerDto.roller
-            roller.size `should be equal to` 1
-            roller.first().rolletype `should be equal to` Rolletype.INNH
+            roller.size shouldBe 1
+            roller.first().rolletype shouldBe Rolletype.INNH
         }
 
         @Test

@@ -1,5 +1,11 @@
 package no.nav.helse.flex.clients
 
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldNotBeBlank
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
 import mockwebserver3.QueueDispatcher
@@ -9,7 +15,6 @@ import no.nav.helse.flex.testdata.lagRolleutskriftPersonIkkeFunnetSoapRespons
 import no.nav.helse.flex.testdata.lagRolleutskriftSoapRespons
 import no.nav.helse.flex.testdata.wrapWithRolleutskriftXmlEnvelope
 import no.nav.helse.flex.testoppsett.*
-import org.amshove.kluent.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -70,7 +75,7 @@ class BrregSoapClientTest {
                         .build()
                 }
 
-            invoking { brregSoapClient.hentStatus() } `should throw` BrregServerException::class
+            shouldThrow<BrregServerException> { brregSoapClient.hentStatus() }
         }
 
         @Test
@@ -84,7 +89,7 @@ class BrregSoapClientTest {
                         .build()
                 }
 
-            brregSoapClient.hentStatus().melding `should be equal to`
+            brregSoapClient.hentStatus().melding shouldBe
                 "hovedStatus: 500, underStatuser: 0: Data returnert, 1180: Enhet 971524553 har ikke Rolleblokk 2"
         }
     }
@@ -104,16 +109,16 @@ class BrregSoapClientTest {
             val roller = brregSoapClient.hentRoller("11111111111")
 
             roller.shouldHaveSize(4)
-            roller.forEach { it.organisasjonsnummer.shouldNotBeNullOrBlank() }
+            roller.forEach { it.organisasjonsnummer.shouldNotBeBlank() }
             roller.let {
-                it[0].rolletype.beskrivelse `should be equal to` Rolletype.INNH.beskrivelse
-                it[0].organisasjonsnavn `should be equal to` "SELSKAP AS"
-                it[1].rolletype.beskrivelse `should be equal to` Rolletype.DTPR.beskrivelse
-                it[1].organisasjonsnavn `should be equal to` "DIDGERIDOO AS"
-                it[2].rolletype.beskrivelse `should be equal to` Rolletype.DTSO.beskrivelse
-                it[2].organisasjonsnavn `should be equal to` "ILA AS"
-                it[3].rolletype.beskrivelse `should be equal to` Rolletype.MEDL.beskrivelse
-                it[3].organisasjonsnavn `should be equal to` "NAV Boretteslag"
+                it[0].rolletype.beskrivelse shouldBe Rolletype.INNH.beskrivelse
+                it[0].organisasjonsnavn shouldBe "SELSKAP AS"
+                it[1].rolletype.beskrivelse shouldBe Rolletype.DTPR.beskrivelse
+                it[1].organisasjonsnavn shouldBe "DIDGERIDOO AS"
+                it[2].rolletype.beskrivelse shouldBe Rolletype.DTSO.beskrivelse
+                it[2].organisasjonsnavn shouldBe "ILA AS"
+                it[3].rolletype.beskrivelse shouldBe Rolletype.MEDL.beskrivelse
+                it[3].organisasjonsnavn shouldBe "NAV Boretteslag"
             }
         }
 
@@ -143,7 +148,7 @@ class BrregSoapClientTest {
                         .build()
                 }
 
-            invoking { brregSoapClient.hentRoller("11111111111") } `should throw` BrregServerException::class
+            shouldThrow<BrregServerException> { brregSoapClient.hentRoller("11111111111") }
         }
 
         @Test
@@ -157,7 +162,7 @@ class BrregSoapClientTest {
                         .build()
                 }
 
-            invoking { brregSoapClient.hentRoller("11111111111") } `should throw` BrregDeserializationException::class
+            shouldThrow<BrregDeserializationException> { brregSoapClient.hentRoller("11111111111") }
         }
 
         @Test
@@ -171,7 +176,7 @@ class BrregSoapClientTest {
                         .build()
                 }
 
-            invoking { brregSoapClient.hentRoller("11111111111") } `should throw` BrregClientException::class
+            shouldThrow<BrregClientException> { brregSoapClient.hentRoller("11111111111") }
         }
     }
 }

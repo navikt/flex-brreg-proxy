@@ -1,11 +1,16 @@
 package no.nav.helse.flex.clients
 
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldNotBeBlank
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
 import mockwebserver3.QueueDispatcher
 import no.nav.helse.flex.testdata.*
 import no.nav.helse.flex.testoppsett.*
-import org.amshove.kluent.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -70,7 +75,7 @@ class BrregStubClientTest {
                         .build()
                 }
 
-            invoking { brregStubClient.hentStatus() } `should throw` BrregClientException::class
+            shouldThrow<BrregClientException> { brregStubClient.hentStatus() }
         }
 
         @Test
@@ -85,7 +90,7 @@ class BrregStubClientTest {
                 }
 
             val status = brregStubClient.hentStatus()
-            status.melding `should be equal to` "\"OK\""
+            status.melding shouldBe "\"OK\""
         }
     }
 
@@ -103,11 +108,11 @@ class BrregStubClientTest {
                 }
 
             val roller = brregStubClient.hentRoller(fnr = "11111111111")
-            roller.size `should be equal to` 1
-            roller.forEach { it.organisasjonsnummer.shouldNotBeNullOrBlank() }
+            roller.size shouldBe 1
+            roller.forEach { it.organisasjonsnummer.shouldNotBeBlank() }
             roller.let {
-                it[0].rolletype.beskrivelse `should be equal to` Rolletype.INNH.beskrivelse
-                it[0].organisasjonsnavn `should be equal to` "SELSKAP AS"
+                it[0].rolletype.beskrivelse shouldBe Rolletype.INNH.beskrivelse
+                it[0].organisasjonsnavn shouldBe "SELSKAP AS"
             }
         }
 
@@ -132,7 +137,7 @@ class BrregStubClientTest {
                         ).build()
                 }
 
-            brregStubClient.hentRoller(fnr = "_").`should be empty`()
+            brregStubClient.hentRoller(fnr = "_").shouldBeEmpty()
         }
 
         @Test
@@ -146,7 +151,7 @@ class BrregStubClientTest {
                         .build()
                 }
 
-            invoking { brregStubClient.hentRoller(fnr = "_") } `should throw` Exception::class
+            shouldThrow<Exception> { brregStubClient.hentRoller(fnr = "_") }
         }
     }
 }

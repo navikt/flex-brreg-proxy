@@ -1,5 +1,6 @@
 package no.nav.helse.flex.clients
 
+import io.kotest.matchers.shouldBe
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
 import no.nav.helse.flex.testdata.lagRolleutskriftErrorSoapRespons
@@ -8,7 +9,6 @@ import no.nav.helse.flex.testoppsett.BrregSoapClientOppsett
 import no.nav.helse.flex.testoppsett.FellesTestOppsett
 import no.nav.helse.flex.testoppsett.RetryTestOppsett
 import no.nav.helse.flex.testoppsett.simpleDispatcher
-import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -38,7 +38,7 @@ class BrregSoapClientRetryTest {
         runCatching {
             brregSoapClient.hentRoller("fnr")
         }
-        antallKall `should be equal to` 3
+        antallKall shouldBe 3
     }
 
     @Test
@@ -57,7 +57,7 @@ class BrregSoapClientRetryTest {
         runCatching {
             brregSoapClient.hentStatus()
         }
-        antallKall `should be equal to` 3
+        antallKall shouldBe 3
     }
 
     @Test
@@ -75,7 +75,7 @@ class BrregSoapClientRetryTest {
 
         brregSoapClient.hentRoller("00000000000")
 
-        antallKall `should be equal to` 1
+        antallKall shouldBe 1
     }
 
     @Test
@@ -93,6 +93,6 @@ class BrregSoapClientRetryTest {
 
         runCatching { brregSoapClient.hentRoller("00000000000") }
 
-        antallKall `should be equal to` 1
+        antallKall shouldBe 1
     }
 }
