@@ -22,7 +22,7 @@ repositories {
 }
 
 val logstashLogbackEncoderVersion = "9.0"
-val kotestVersion = "6.2.6"
+val kotestVersion = "6.2.7"
 val commonsTextVersion = "1.15.0"
 val tokenSupportVersion = "6.0.12"
 val apacheCxfVersion = "4.2.4"
